@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>템플릿 — AiApp | AI로 만들고, BaaS로 운영까지</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   AiApp Design System — 홈(시안2_최종본) 토큰 그대로 사용
+   프레임: 와이어프레임 v2 · 데이터: 실서비스 템플릿 32종 (cdn.mbaas.kr)
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --paper:#F7F9FC;
+  --surface:#FFFFFF;
+  --ink:#0E1626;
+  --muted:#5B6577;
+  --faint:#8B94A6;
+  --accent:#2B5CE6;
+  --accent-deep:#1E43B8;
+  --mint:#5CDBB4;
+  --navy:#0A1836;
+  --navy-2:#12224A;
+  --line:#E4E9F2;
+  --radius:16px;
+  --font:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--ink);font-family:var(--font);line-height:1.6;-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;}
+button{font-family:var(--font);}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px;}
+.eyebrow{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);}
+
+/* 버튼 — 홈과 동일 (shine sweep) */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;font-size:14.5px;font-weight:700;border:1.5px solid transparent;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,background .18s ease;font-family:var(--font);position:relative;overflow:hidden;}
+.btn::after{content:"";position:absolute;top:0;left:-120%;width:60%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);transition:left .5s ease;}
+.btn:hover::after{left:140%;}
+.btn:focus-visible{outline:3px solid rgba(43,92,230,.4);outline-offset:2px;}
+.btn-accent{background:var(--accent);color:#fff;box-shadow:0 6px 18px rgba(43,92,230,.32);}
+.btn-accent:hover{background:var(--accent-deep);transform:translateY(-2px);}
+.btn-ghost{background:#fff;border-color:var(--line);color:var(--ink);}
+.btn-ghost:hover{border-color:var(--ink);}
+
+/* reveal — 홈과 동일 */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.16,.84,.44,1),transform .7s cubic-bezier(.16,.84,.44,1);}
+.reveal.on{opacity:1;transform:none;}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none;}*{animation:none!important;transition:none!important;}}
+
+/* ─── 상단 프로모 배너 (홈과 동일) ─── */
+.topbanner{position:relative;display:block;background:linear-gradient(90deg,#6B3AF2 0%,#5B4BF5 40%,#2B5CE6 100%);color:#fff;cursor:pointer;}
+.topbanner-in{max-width:1160px;margin:0 auto;padding:7px 52px;text-align:center;font-size:13px;font-weight:600;letter-spacing:-.01em;line-height:1.4;}
+.topbanner b{font-weight:800;}
+.topbanner .tb-link{font-weight:800;text-decoration:underline;text-underline-offset:3px;margin-left:6px;white-space:nowrap;}
+.topbanner .tb-arrow{display:inline-block;margin-left:4px;transition:transform .2s;}
+.topbanner:hover .tb-arrow{transform:translateX(3px);}
+.topbanner-x{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:24px;height:24px;border:none;border-radius:8px;background:transparent;color:rgba(255,255,255,.85);font-size:16px;line-height:1;cursor:pointer;}
+.topbanner-x:hover{background:rgba(255,255,255,.15);color:#fff;}
+@media(max-width:760px){.topbanner-in{font-size:12px;padding:10px 44px;}}
+
+/* ─── GNB (홈과 동일: blur + glass) ─── */
+.gnb{position:sticky;top:0;z-index:50;background:rgba(247,249,252,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+.gnb-in{position:relative;max-width:1360px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;gap:24px;}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.02em;}
+.logo-img{height:26px;width:auto;display:block;}
+.gnb nav{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;gap:24px;font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.01em;white-space:nowrap;}
+.gnb nav a:hover{color:var(--accent);}
+.gnb nav a.on{color:var(--accent);}
+.gnb .util{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:13.5px;font-weight:500;}
+.gnb .util .lang{color:var(--muted);font-family:var(--mono);font-size:11.5px;font-weight:700;cursor:pointer;border:none;background:transparent;padding:6px 8px;border-radius:8px;}
+.gnb .util .lang:hover{background:rgba(43,92,230,.07);color:var(--accent);}
+.gnb-badge{display:inline-flex;align-items:center;gap:7px;border:1px solid #E3E7EF;border-radius:999px;padding:4px 11px 4px 9px;background:#F4F6FA;white-space:nowrap;transition:border-color .2s,background .2s;}
+.gnb-badge:hover{border-color:rgba(43,92,230,.4);background:#EFF3FB;}
+.gnb-badge .mc-logo{font-size:8px;font-weight:900;color:#1E4FD8;line-height:1.05;letter-spacing:-.03em;text-align:left;}
+.gnb-badge .mc-tx{font-size:11px;font-weight:800;color:var(--ink);letter-spacing:-.01em;}
+.gnb-badge .check{color:var(--accent);font-weight:800;}
+@media(max-width:920px){.gnb-badge{display:none;}}
+.gnb .btn{padding:9px 18px;font-size:13.5px;}
+@media(max-width:1280px){.gnb nav{position:static;transform:none;flex:1;justify-content:center;gap:20px;font-size:14px;}}
+@media(max-width:760px){.gnb nav{display:none;}}
+
+/* ═══ HERO ═══ */
+.hero{position:relative;padding:78px 0 46px;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(560px 300px at 32% 12%,rgba(43,92,230,.13),transparent 70%),
+    radial-gradient(520px 300px at 68% 8%,rgba(92,219,180,.16),transparent 70%),
+    radial-gradient(700px 380px at 50% 110%,rgba(43,92,230,.07),transparent 70%);
+  animation:auroraFloat 14s ease-in-out infinite alternate;}
+@keyframes auroraFloat{from{transform:translate3d(0,0,0) scale(1);}to{transform:translate3d(0,-14px,0) scale(1.05);}}
+.hero-grid-bg{position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(ellipse 60% 60% at 50% 30%,#000 30%,transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse 60% 60% at 50% 30%,#000 30%,transparent 75%);}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(2px);pointer-events:none;}
+.orb-a{width:10px;height:10px;background:rgba(43,92,230,.5);top:30%;left:15%;animation:orbFloat 9s ease-in-out infinite;}
+.orb-b{width:14px;height:14px;background:rgba(92,219,180,.55);top:22%;right:17%;animation:orbFloat 11s ease-in-out infinite reverse;}
+.orb-c{width:7px;height:7px;background:rgba(43,92,230,.35);bottom:18%;right:32%;animation:orbFloat 13s ease-in-out infinite;}
+@keyframes orbFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-16px);}}
+.hero-in{position:relative;text-align:center;max-width:820px;margin:0 auto;}
+.badge-line{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);background:rgba(43,92,230,.07);border:1px solid rgba(43,92,230,.2);border-radius:999px;padding:6px 16px;}
+.badge-line .dot{width:7px;height:7px;border-radius:50%;background:var(--mint);animation:pulse 1.8s ease-in-out infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(92,219,180,.25);}50%{box-shadow:0 0 0 6px rgba(92,219,180,.08);}}
+.hero h1{font-size:clamp(32px,4.6vw,50px);font-weight:800;letter-spacing:-.04em;line-height:1.2;margin-top:24px;}
+.hero h1 .grad{background:linear-gradient(92deg,var(--accent) 10%,#5B8DEF 55%,var(--mint) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% auto;animation:gradShift 6s linear infinite;}
+@keyframes gradShift{to{background-position:200% center;}}
+.hero .lead{font-size:16.5px;color:var(--muted);margin-top:16px;}
+.hero .badge-line,.hero h1,.hero .lead{animation:heroUp .8s cubic-bezier(.16,.84,.44,1) backwards;}
+.hero .badge-line{animation-delay:.02s;}
+.hero h1{animation-delay:.1s;}
+.hero .lead{animation-delay:.18s;}
+@keyframes heroUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:none;}}
+
+/* ═══ 카테고리 탭 (sticky) ═══ */
+.tabs-wrap{position:sticky;top:64px;z-index:40;background:rgba(247,249,252,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+/* 축소: 한 줄만 노출 → 더보기 화살표 클릭 시 아래로 펼침 */
+.tabs-shell{position:relative;max-width:1208px;margin:0 auto;padding:0 68px;}
+/* 가운데 정렬 + 접힘 시 첫 줄(50px)만 노출, 둘째 줄부터 숨김 */
+/* '전체'는 고정, 나머지가 AI·ML 시작점 기준으로 줄바꿈 */
+.tabs{display:flex;align-items:flex-start;gap:6px;padding:13px 0;max-height:50px;overflow:hidden;transition:max-height .38s cubic-bezier(.16,.84,.44,1);}
+.tabs > .tab{flex:none;}
+.tabs-rest{display:flex;flex-wrap:wrap;row-gap:8px;column-gap:6px;flex:1;min-width:0;}
+.tabs-shell.open .tabs{max-height:220px;padding-bottom:16px;}
+/* 접힘 상태에서 우측 페이드 (잘림 힌트) */
+.tabs-shell::after{content:"";position:absolute;top:0;right:60px;width:48px;height:50px;background:linear-gradient(90deg,transparent,rgba(247,249,252,.95));pointer-events:none;opacity:1;transition:opacity .25s;}
+.tabs-shell.open::after{opacity:0;}
+.tabs-more{position:absolute;top:13px;right:24px;width:37px;height:37px;border:1px solid var(--line);background:#fff;border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all .18s;box-shadow:0 1px 2px rgba(14,22,38,.04);}
+.tabs-more:hover{border-color:var(--accent);color:var(--accent);}
+.tabs-more svg{width:15px;height:15px;transition:transform .3s cubic-bezier(.16,.84,.44,1);}
+.tabs-shell.open .tabs-more svg{transform:rotate(180deg);}
+.tab{display:flex;align-items:center;gap:7px;border:1px solid transparent;background:none;border-radius:999px;padding:8px 15px;font-size:13.5px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .18s;}
+.tab .ic{display:inline-flex;align-items:center;}
+.tab .ic svg{width:14px;height:14px;}
+.tab small{font-family:var(--mono);font-size:11px;font-weight:700;opacity:.55;}
+.tab:hover{background:rgba(43,92,230,.07);color:var(--accent);}
+.tab.on{background:var(--ink);color:#fff;box-shadow:0 6px 16px rgba(14,22,38,.18);}
+.tab.on small{opacity:.65;}
+
+/* ═══ 그리드 ═══ */
+.main{max-width:1208px;margin:0 auto;padding:36px 24px 8px;}
+.listhead{display:flex;align-items:baseline;gap:10px;margin-bottom:22px;}
+.listhead .catline{font-size:15px;font-weight:800;letter-spacing:-.02em;}
+.listhead .count{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--accent);background:rgba(43,92,230,.07);border:1px solid rgba(43,92,230,.18);border-radius:999px;padding:2px 11px;}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px 22px;}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:620px){.grid{grid-template-columns:1fr;}}
+
+/* ═══ 카드 — 실서비스 썸네일 적용 ═══ */
+.card{cursor:pointer;background:none;border:none;text-align:left;padding:0;}
+.card .shotwrap{position:relative;aspect-ratio:16/10;border-radius:var(--radius);border:1px solid var(--line);overflow:hidden;background:var(--surface);box-shadow:0 1px 2px rgba(14,22,38,.04);transition:transform .22s cubic-bezier(.16,.84,.44,1),box-shadow .22s,border-color .22s;}
+.card:hover .shotwrap{transform:translateY(-4px);box-shadow:0 24px 48px -22px rgba(14,22,38,.22);border-color:rgba(43,92,230,.28);}
+.card:focus-visible{outline:3px solid rgba(43,92,230,.4);outline-offset:3px;border-radius:var(--radius);}
+.card .thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;transition:transform .45s cubic-bezier(.16,.84,.44,1);background:var(--paper);}
+.card:hover .thumb{transform:scale(1.04);}
+/* 배지 & 하트 */
+.badge{position:absolute;top:12px;left:12px;z-index:3;font-size:10.5px;font-weight:800;color:var(--ink);background:rgba(255,255,255,.92);backdrop-filter:blur(6px);border:1px solid rgba(14,22,38,.08);border-radius:999px;padding:4px 11px;}
+.fav{position:absolute;top:10px;right:10px;z-index:3;width:32px;height:32px;border-radius:10px;border:1px solid rgba(14,22,38,.08);background:rgba(255,255,255,.92);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--faint);opacity:0;transform:translateY(-4px);transition:all .2s;}
+.card:hover .fav,.fav.active{opacity:1;transform:none;}
+.fav:hover{color:#F53D7A;border-color:rgba(245,61,122,.35);}
+.fav.active{color:#F53D7A;}
+.fav svg{width:15px;height:15px;}
+/* hover 이중 CTA */
+.ovl{position:absolute;inset:0;z-index:2;background:linear-gradient(to top,rgba(14,22,38,.46),rgba(14,22,38,0) 55%);display:flex;align-items:flex-end;justify-content:center;gap:8px;padding:15px;opacity:0;transition:opacity .22s;}
+.card:hover .ovl,.card:focus .ovl{opacity:1;}
+.ovl .btn{padding:9px 17px;font-size:13px;border-radius:11px;}
+.ovl .btn-ghost{background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-color:transparent;}
+/* 카드 텍스트 — [이름 — 설명] 행잉 인덴트: 줄바꿈 시 설명 시작점에 정렬 */
+.cardtext{padding:13px 4px 0;}
+.cardtext .tline{display:flex;gap:8px;align-items:baseline;}
+.cardtext .name{font-size:14.5px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;flex:none;}
+.cardtext .dash{color:var(--faint);flex:none;}
+.cardtext .desc{flex:1;min-width:0;font-size:13.5px;color:var(--muted);font-weight:400;line-height:1.55;}
+.cardtext .meta{margin-top:8px;font-size:12px;color:var(--faint);font-weight:600;display:flex;gap:12px;align-items:center;}
+.cardtext .meta span{display:inline-flex;align-items:center;gap:5px;}
+.cta-stats span{display:inline-flex;align-items:center;gap:5px;}
+
+.loadmore{display:block;margin:44px auto 8px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:12px 34px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .18s;}
+.loadmore:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px);}
+
+/* ═══ 폴백 밴드 — 홈 final-card 문법 ═══ */
+.fallback{max-width:1208px;margin:44px auto 90px;padding:0 24px;}
+.final-card{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:64px 40px;text-align:center;box-shadow:0 24px 60px -30px rgba(43,92,230,.3);}
+.final-card::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(480px 240px at 20% 0%,rgba(43,92,230,.1),transparent 70%),
+  radial-gradient(480px 240px at 80% 100%,rgba(92,219,180,.12),transparent 70%);pointer-events:none;}
+.final-card>*{position:relative;}
+.final-card h2{font-size:clamp(24px,3.2vw,36px);font-weight:800;letter-spacing:-.035em;line-height:1.28;}
+.final-card .sub{font-size:15px;color:var(--muted);margin-top:12px;}
+.final-btns{display:flex;gap:12px;justify-content:center;margin-top:28px;flex-wrap:wrap;}
+.mini-prompt{max-width:460px;margin:26px auto 0;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:13px 18px;font-size:13px;color:var(--faint);text-align:left;display:flex;justify-content:space-between;align-items:center;}
+.mini-prompt span:last-child{color:var(--accent);font-weight:700;}
+.fb-trust{margin-top:16px;font-size:12.5px;color:var(--faint);display:flex;gap:14px;justify-content:center;}
+
+/* ─── footer (홈과 동일) ─── */
+footer{border-top:1px solid var(--line);background:#fff;padding:64px 0 32px;}
+.foot-grid{display:grid;grid-template-columns:1.7fr repeat(5,1fr);gap:24px;}
+.foot-grid h6{font-size:13px;font-weight:800;margin-bottom:14px;}
+.foot-grid a{display:block;font-size:12.5px;color:var(--muted);padding:4px 0;}
+.foot-grid a:hover{color:var(--accent);}
+.foot-desc{font-size:13px;color:var(--muted);margin-top:14px;line-height:1.7;}
+.biz{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-size:11px;color:var(--faint);line-height:1.8;text-align:center;}
+.biz-check{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;color:var(--muted);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:3px 9px;margin-left:8px;vertical-align:middle;transition:border-color .15s,color .15s;}
+.biz-check:hover{border-color:var(--accent);color:var(--accent);}
+@media(max-width:860px){.foot-grid{grid-template-columns:1fr 1fr 1fr;}}
+@media(max-width:600px){.foot-grid{grid-template-columns:1fr 1fr;}}
+
+/* ─── LOGIN MODAL (홈과 동일) ─── */
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(10,24,54,.55);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:24px;opacity:0;transition:opacity .25s ease;}
+.modal-overlay.on{display:flex;opacity:1;}
+.modal-panel{position:relative;width:100%;max-width:400px;background:#fff;border-radius:22px;padding:38px 34px 30px;box-shadow:0 40px 90px -30px rgba(10,24,54,.5);transform:translateY(16px) scale(.98);transition:transform .3s cubic-bezier(.16,.84,.44,1);max-height:92vh;overflow-y:auto;}
+.modal-overlay.on .modal-panel{transform:none;}
+.modal-close{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:10px;border:none;background:var(--paper);color:var(--muted);font-size:14px;cursor:pointer;transition:background .15s;}
+.modal-close:hover{background:var(--line);}
+.modal-brand{display:flex;align-items:center;justify-content:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.02em;}
+.modal-title{font-size:21px;font-weight:800;text-align:center;letter-spacing:-.03em;margin-top:18px;}
+.modal-sub{font-size:13px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.6;}
+.social-list{display:flex;justify-content:center;gap:18px;margin-top:0;}
+.social-btn{display:flex;flex-direction:column;align-items:center;gap:8px;background:none;border:none;cursor:pointer;font-family:var(--font);padding:0;transition:transform .12s;}
+.social-btn .s-logo{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid transparent;transition:filter .15s,box-shadow .15s,transform .15s;box-shadow:0 2px 8px rgba(14,22,38,.06);}
+.social-btn:hover .s-logo{transform:translateY(-3px);box-shadow:0 8px 18px rgba(14,22,38,.14);}
+.social-btn:active{transform:scale(.96);}
+.social-btn .s-label{font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:-.01em;}
+.social-btn.kakao .s-logo{background:#FEE500;}
+.social-btn.naver .s-logo{background:#03C75A;}
+.social-btn.google .s-logo{background:#fff;border-color:#DADCE0;}
+.social-btn.apple .s-logo{background:#000;}
+.modal-divider{display:flex;align-items:center;gap:12px;margin:22px 0 18px;color:var(--faint);font-size:11.5px;}
+.modal-divider::before,.modal-divider::after{content:"";flex:1;height:1px;background:var(--line);}
+.email-form{display:grid;gap:10px;margin-top:26px;}
+.modal-input{width:100%;height:46px;padding:0 14px;border:1.5px solid var(--line);border-radius:11px;font-size:14px;font-family:var(--font);transition:border-color .15s;}
+.modal-input:focus{outline:none;border-color:var(--accent);}
+.modal-submit{width:100%;height:46px;justify-content:center;margin-top:2px;}
+.modal-foot{text-align:center;font-size:13px;color:var(--muted);margin-top:20px;}
+.modal-foot a{color:var(--accent);font-weight:700;}
+.modal-terms{text-align:center;font-size:11px;color:var(--faint);margin-top:14px;line-height:1.6;}
+.modal-terms a{color:var(--muted);text-decoration:underline;}
+@media(max-width:440px){.modal-panel{padding:32px 22px 24px;}}
+/* 로그인 상태 MY 버튼 (홈과 동일) */
+.gnb-my{gap:7px!important;padding-left:6px!important;}
+.gnb-my .my-av{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.25);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}
+
+/* ═══ 상세 뷰 (Lovable 패턴) ═══ */
+.detail{position:fixed;inset:0;z-index:100;background:var(--paper);overflow-y:auto;display:none;}
+.detail.open{display:block;}
+.d-bar{position:sticky;top:0;z-index:10;background:rgba(247,249,252,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:12px max(24px,calc((100vw - 1080px)/2));}
+.d-bar .back{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);transition:all .15s;}
+.d-bar .back:hover{border-color:var(--accent);color:var(--accent);}
+.crumb{font-size:13px;color:var(--faint);}
+.crumb b{color:var(--ink);font-weight:700;}
+.d-wrap{max-width:1080px;margin:0 auto;padding:44px 24px 90px;}
+.d-head{display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap;}
+.d-head .tt{flex:1;min-width:300px;}
+.d-head h1{font-size:clamp(28px,3.6vw,38px);font-weight:800;letter-spacing:-.035em;line-height:1.18;}
+.d-head .by{margin-top:10px;font-size:13.5px;color:var(--faint);display:flex;align-items:center;gap:8px;}
+.d-head .by .t-av{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--mint));color:#fff;font-size:9.5px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;}
+.d-head .by b{color:var(--muted);font-weight:700;}
+.d-ctas{display:flex;gap:10px;align-items:center;padding-top:8px;}
+.d-micro{width:100%;font-size:12.5px;color:var(--faint);margin-top:4px;}
+
+.d-pv{margin-top:30px;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--surface);box-shadow:0 34px 72px -34px rgba(31,58,147,.4);}
+.pv-chrome{display:flex;align-items:center;gap:14px;height:44px;background:var(--paper);border-bottom:1px solid var(--line);padding:0 18px;}
+.sm-dots{display:flex;gap:6px;}
+.sm-dots i{width:10px;height:10px;border-radius:50%;background:var(--line);}
+.pv-url{font-family:var(--mono);font-size:11px;color:var(--faint);flex:1;text-align:center;}
+.pv-devs{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+.pv-devs button{border:none;background:#fff;padding:5px 13px;font-size:11.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;}
+.pv-devs button.on{background:var(--ink);color:#fff;}
+.pv-stage{position:relative;height:560px;display:flex;align-items:flex-start;justify-content:center;overflow:hidden;background:
+  radial-gradient(400px 200px at 30% 20%,rgba(43,92,230,.06),transparent 70%),
+  radial-gradient(400px 200px at 70% 80%,rgba(92,219,180,.08),transparent 70%),var(--paper);}
+.pv-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--faint);font-size:13px;z-index:1;}
+.pv-spin{width:26px;height:26px;border-radius:50%;border:2.5px solid var(--line);border-top-color:var(--accent);animation:pvSpin .8s linear infinite;}
+@keyframes pvSpin{to{transform:rotate(360deg);}}
+.pv-inner{position:relative;z-index:2;width:100%;height:100%;transition:width .3s;}
+.pv-inner.mobile{width:375px;border-left:1px solid var(--line);border-right:1px solid var(--line);box-shadow:0 0 40px -10px rgba(14,22,38,.15);}
+.pv-inner iframe{display:block;width:100%;height:100%;border:none;background:#fff;}
+
+.d-cols{display:grid;grid-template-columns:1.6fr 1fr;gap:40px;margin-top:44px;}
+.d-sec{margin-bottom:34px;}
+.d-sec h2{font-size:17px;font-weight:800;letter-spacing:-.02em;margin-bottom:12px;}
+.d-sec p{font-size:14.5px;color:var(--muted);line-height:1.75;}
+.hl{display:flex;gap:8px;flex-wrap:wrap;}
+.hl span{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 15px;letter-spacing:.01em;}
+.feat{list-style:none;}
+.feat li{font-size:14px;color:var(--muted);padding:10px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:flex-start;line-height:1.6;}
+.feat li::before{content:"";flex:none;margin-top:3px;width:17px;height:17px;border-radius:6px;background:var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/10px 10px no-repeat;}
+.persona-box{background:linear-gradient(135deg,rgba(43,92,230,.06),rgba(92,219,180,.08));border:1px solid rgba(43,92,230,.16);border-radius:14px;padding:18px 20px;font-size:14px;color:var(--muted);line-height:1.7;}
+.d-side .sticky{position:sticky;top:76px;}
+.cta-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 18px 44px -24px rgba(43,92,230,.25);}
+.cta-card .btn{width:100%;justify-content:center;}
+.cta-card .btn-ghost{margin-top:8px;}
+.cta-card .micro{text-align:center;font-size:12px;color:var(--faint);margin-top:14px;}
+.cta-stats{display:flex;justify-content:center;gap:18px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--faint);font-weight:600;}
+.rel{margin-top:24px;}
+.rel h2{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:20px;}
+@media(max-width:900px){.d-cols{grid-template-columns:1fr;}.d-head{flex-direction:column;}}
+</style>
+</head>
+<body>
+
+<!-- 상단 프로모 배너 (홈과 동일) -->
+<a class="topbanner" id="topBanner" href="https://aiapp.help/modoo" target="_blank" rel="noopener">
+  <div class="topbanner-in">🎉&nbsp; <b>AiApp, 중소벤처기업부 「모두의 창업 프로젝트」 AI 솔루션 공급기업 선정!</b><span class="tb-link">모두의 창업 전용관 보기<span class="tb-arrow">→</span></span></div>
+  <button class="topbanner-x" type="button" aria-label="배너 닫기" onclick="event.preventDefault();event.stopPropagation();document.getElementById('topBanner').style.display='none';">✕</button>
+</a>
+
+<!-- GNB (홈과 동일) -->
+<header class="gnb">
+  <div class="gnb-in">
+    <a class="logo" href="index.html"><img class="logo-img" src="https://aiapp.help/img/logo.svg" alt="AiApp"></a>
+    <nav>
+      <a href="index.html">홈</a>
+      <a href="#" class="on">템플릿</a>
+      <a href="#">요금제</a>
+      <a href="#">견적 내보기</a>
+      <a href="#">블로그</a>
+      <a href="#">공지</a>
+    </nav>
+    <div class="util">
+      <a class="gnb-badge" href="https://www.modoo.or.kr/ai-solution/organization/e01g76z979qj" target="_blank" rel="noopener"><span class="mc-logo">모두의<br>창업</span><span class="mc-tx"><span class="check">✓</span> AI 솔루션 공급기업</span></a>
+      <button class="lang" type="button" aria-label="언어 전환" onclick="this.textContent=this.textContent.trim().startsWith('KR')?'EN ▾':'KR ▾';">KR ▾</button>
+      <span id="authLoggedOut" style="display:flex;align-items:center;gap:14px;">
+        <a href="#" onclick="openLogin('login');return false;">로그인</a>
+        <a class="btn btn-accent" href="#" onclick="openLogin('signup');return false;">무료로 만들기</a>
+      </span>
+      <span id="authLoggedIn" style="display:none;align-items:center;gap:14px;">
+        <a href="#" onclick="logout();return false;">로그아웃</a>
+        <a class="btn btn-accent gnb-my" href="#"><span class="my-av">엠</span>MY</a>
+      </span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-bg"></div>
+  <span class="hero-orb orb-a"></span><span class="hero-orb orb-b"></span><span class="hero-orb orb-c"></span>
+  <div class="wrap hero-in">
+    <span class="badge-line"><span class="dot"></span>AI Templates</span>
+    <h1>AI가 만드는 나만의 웹사이트<br><span class="grad">템플릿으로 시작하세요</span></h1>
+    <p class="lead">검증된 디자인 템플릿을 선택하고, AI와 대화하면서 원하는 대로 수정하세요.</p>
+  </div>
+</section>
+
+<!-- ═══ 카테고리 탭 (실서비스 12종) ═══ -->
+<div class="tabs-wrap">
+  <div class="tabs-shell" id="tabsShell">
+    <div class="tabs" id="tabs"></div>
+    <button class="tabs-more" id="tabsMore" type="button" aria-label="카테고리 더보기" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ═══ 그리드 ═══ -->
+<main class="main">
+  <div class="listhead"><span class="catline" id="catline">모든 템플릿</span><span class="count" id="count">32개</span></div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<!-- ═══ 폴백 ═══ -->
+<section class="fallback">
+  <div class="final-card reveal">
+    <span class="eyebrow">Start Building</span>
+    <h2 style="margin-top:14px;">원하는 템플릿이 없나요?</h2>
+    <p class="sub">괜찮아요. AI에게 원하는 모습을 설명하면 처음부터 만들어드립니다.</p>
+    <div class="final-btns">
+      <a class="btn btn-accent" href="#"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>AI에게 바로 만들어달라고 하기</a>
+      <a class="btn btn-ghost" href="#">원하는 템플릿 요청하기</a>
+    </div>
+    <div class="mini-prompt"><span>“우리 동네 반찬가게 주문 앱 만들어줘”</span><span>↵ 생성</span></div>
+    <div class="fb-trust"><span>무료</span><span>·</span><span>10분 완성</span><span>·</span><span>신용카드 불필요</span></div>
+  </div>
+</section>
+
+<!-- ─── FOOTER (홈과 동일) ─── -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="logo" href="index.html"><img class="logo-img" src="https://aiapp.help/img/logo.svg" alt="AiApp"></a>
+        <p class="foot-desc">AI가 웹과 앱을 생성하고,<br>BaaS로 바로 운영까지 가능한 플랫폼</p>
+      </div>
+      <div><h6>제품</h6><a href="#">AI 스튜디오</a><a href="#">템플릿</a><a href="#">요금제</a><a href="#">견적 내보기</a></div>
+      <div><h6>BaaS</h6><a href="#">인증 관리</a><a href="#">결제 관리</a><a href="#">메시지·푸시</a><a href="#">전체 기능</a></div>
+      <div><h6>리소스</h6><a href="#">블로그</a><a href="#">공지</a><a href="#">FAQ</a><a href="#">가이드</a></div>
+      <div><h6>회사</h6><a href="#">회사 소개</a><a href="#">이용약관</a><a href="#">개인정보처리방침</a></div>
+      <div><h6>지원</h6><a href="#">고객 문의</a><a href="#">help@aiapp.help</a><a href="#">070-8648-2750</a></div>
+    </div>
+    <div class="biz">
+      본사. 부산광역시 금정구 부산대학로50번길 68, 4층 404호(장전동, 피엔유에이벡) · 연구소. 부산광역시 연제구 연제로 24, 206호<br>
+      상호명. (주)엠바스 · CEO. 김정현 · E-mail. help@aiapp.help · 연락처. 070-8648-2750 · 사업자 번호. 128-88-02089<br>
+      통신판매업신고번호. 제2026-부산금정-0312호<a class="biz-check" href="https://www.ftc.go.kr/bizCommPop.do?wrkr_no=1288802089" target="_blank" rel="noopener">사업자정보확인</a> · 통신판매중개업자. 주식회사 엠바스<br>
+      COPYRIGHT(c) 2025 AIAPP. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<!-- ═══ LOGIN MODAL (홈과 동일) ═══ -->
+<div class="modal-overlay" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle" onclick="if(event.target===this)closeLogin()">
+  <div class="modal-panel">
+    <button class="modal-close" onclick="closeLogin()" aria-label="닫기"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    <div class="modal-brand"><img class="logo-img" src="https://aiapp.help/img/logo.svg" alt="AiApp"></div>
+    <h2 class="modal-title" id="loginTitle">시작해 볼까요?</h2>
+    <p class="modal-sub" id="loginSub">3초 만에 로그인하고, 아이디어를 현실로 만들어 보세요.</p>
+
+    <div class="email-form">
+      <input type="email" class="modal-input" placeholder="이메일 주소" aria-label="이메일">
+      <input type="password" class="modal-input" placeholder="비밀번호" aria-label="비밀번호">
+      <button class="btn btn-accent modal-submit" type="button" onclick="socialLogin('이메일')" id="modalSubmit">로그인</button>
+    </div>
+
+    <div class="modal-divider"><span>또는 소셜 계정으로</span></div>
+
+    <div class="social-list">
+      <button class="social-btn kakao" type="button" onclick="socialLogin('카카오')" aria-label="카카오로 시작하기">
+        <span class="s-logo"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="#000000" d="M12 3C6.48 3 2 6.58 2 10.99c0 2.87 1.9 5.38 4.76 6.79-.16.57-.85 3.04-.88 3.24 0 0-.02.15.08.21.1.06.22.01.22.01.28-.04 3.27-2.14 3.79-2.51.66.09 1.34.14 2.03.14 5.52 0 10-3.58 10-7.99C22 6.58 17.52 3 12 3z"/></svg></span>
+        <span class="s-label">카카오</span>
+      </button>
+      <button class="social-btn naver" type="button" onclick="socialLogin('네이버')" aria-label="네이버로 시작하기">
+        <span class="s-logo"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="#FFFFFF" d="M14.5 12.3L9.2 4H4v16h5.5v-8.3L14.8 20H20V4h-5.5z"/></svg></span>
+        <span class="s-label">네이버</span>
+      </button>
+      <button class="social-btn google" type="button" onclick="socialLogin('구글')" aria-label="Google 계정으로 로그인">
+        <span class="s-logo"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="#4285F4" d="M23.52 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h6.47a5.53 5.53 0 0 1-2.4 3.63v3h3.87c2.26-2.09 3.58-5.17 3.58-8.87z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.08 7.95-2.91l-3.87-3c-1.08.72-2.45 1.15-4.08 1.15-3.13 0-5.78-2.11-6.73-4.96H1.28v3.09A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.27 14.28a7.2 7.2 0 0 1 0-4.56V6.63H1.28a12 12 0 0 0 0 10.74l3.99-3.09z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42A11.97 11.97 0 0 0 12 0 12 12 0 0 0 1.28 6.63l3.99 3.09C6.22 6.86 8.87 4.75 12 4.75z"/></svg></span>
+        <span class="s-label">Google</span>
+      </button>
+      <button class="social-btn apple" type="button" onclick="socialLogin('애플')" aria-label="Apple로 계속하기">
+        <span class="s-logo"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="#FFFFFF" d="M17.05 12.54c-.02-2.06 1.68-3.05 1.76-3.1-.96-1.4-2.45-1.6-2.98-1.62-1.27-.13-2.48.75-3.12.75-.64 0-1.64-.73-2.7-.71-1.39.02-2.67.81-3.38 2.05-1.44 2.5-.37 6.2 1.03 8.23.69 1 1.51 2.11 2.58 2.07 1.04-.04 1.43-.67 2.69-.67 1.25 0 1.61.67 2.7.65 1.12-.02 1.82-1.01 2.5-2.01.79-1.15 1.11-2.27 1.13-2.33-.02-.01-2.17-.83-2.21-3.31zM15 5.8c.57-.69.95-1.65.85-2.6-.82.03-1.81.55-2.4 1.24-.53.61-.99 1.59-.86 2.53.91.07 1.84-.47 2.41-1.17z"/></svg></span>
+        <span class="s-label">Apple</span>
+      </button>
+    </div>
+
+    <p class="modal-foot" id="modalFoot">아직 계정이 없으신가요? <a href="#" onclick="switchMode('signup');return false;">회원가입</a></p>
+    <p class="modal-terms">계속 진행하면 <a href="#">이용약관</a> 및 <a href="#">개인정보처리방침</a>에 동의하게 됩니다.</p>
+  </div>
+</div>
+
+<!-- ═══ 상세 뷰 ═══ -->
+<div class="detail" id="detail" role="dialog" aria-modal="true">
+  <div class="d-bar">
+    <button class="back" onclick="closeDetail()">← 템플릿 목록</button>
+    <span class="crumb">템플릿 / <span id="dCrumbCat"></span> / <b id="dCrumbName"></b></span>
+  </div>
+  <div class="d-wrap">
+    <div class="d-head">
+      <div class="tt">
+        <h1 id="dTitle"></h1>
+        <p class="by"><span class="t-av">A</span>제작 <b>AiApp Team</b> · <span id="dType">웹사이트 템플릿</span></p>
+      </div>
+      <div class="d-ctas">
+        <button class="btn btn-ghost">미리보기</button>
+        <button class="btn btn-accent">이 디자인으로 시작하기</button>
+      </div>
+      <p class="d-micro">무료 · 평균 10분 완성 · 시작 후 언제든 템플릿 변경 가능</p>
+    </div>
+
+    <div class="d-pv">
+      <div class="pv-chrome">
+        <div class="sm-dots"><i></i><i></i><i></i></div>
+        <div class="pv-url" id="dUrl">preview.aiapp.help</div>
+        <div class="pv-devs">
+          <button class="on" onclick="setDev(this,false)">데스크톱</button>
+          <button onclick="setDev(this,true)">모바일</button>
+        </div>
+      </div>
+      <div class="pv-stage">
+        <div class="pv-loading" id="pvLoading"><span class="pv-spin"></span>라이브 프리뷰 로딩 중…</div>
+        <div class="pv-inner" id="pvInner"><iframe id="pvFrame" src="about:blank" title="템플릿 라이브 미리보기" loading="lazy"></iframe></div>
+      </div>
+    </div>
+
+    <div class="d-cols">
+      <div>
+        <div class="d-sec">
+          <h2>주요 특징</h2>
+          <div class="hl" id="dHl"></div>
+        </div>
+        <div class="d-sec">
+          <h2>이 템플릿은?</h2>
+          <p id="dDesc"></p>
+        </div>
+        <div class="d-sec">
+          <h2>포함 기능</h2>
+          <ul class="feat" id="dFeat"></ul>
+        </div>
+        <div class="d-sec">
+          <h2>이런 분께 추천해요</h2>
+          <p class="persona-box" id="dPersona"></p>
+        </div>
+      </div>
+      <aside class="d-side">
+        <div class="sticky">
+          <div class="cta-card">
+            <button class="btn btn-accent">이 디자인으로 시작하기</button>
+            <button class="btn btn-ghost">미리보기</button>
+            <p class="micro">무료 · 10분 완성 · 신용카드 불필요</p>
+            <div class="cta-stats"><span id="dStatType">🌐 웹사이트</span><span id="dStatCat"></span></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="rel">
+      <h2>비슷한 템플릿</h2>
+      <div class="grid" id="relGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ 실서비스 데이터 (aiapp.help/templates · cdn.mbaas.kr 썸네일 32종) ═══
+   ※ 한 줄 설명(d)과 사용 수(u)는 시안용 제안 카피/더미 수치 */
+const CDN = 'https://cdn.mbaas.kr/registry/preview/pages/';
+const T = [
+  {n:'우리의 하루', s:'wedding-front-landing.png', c:'마케팅 · 영업', d:'청첩장과 예식 안내를 담은 웨딩 사이트', k:'website'},
+  {n:'오라 커피', s:'aura-coffee-landing.png', c:'식음료', d:'메뉴와 매장 무드를 전하는 카페 랜딩', k:'website'},
+  {n:'모두의 AI 커뮤니티', s:'allcus-landing.png', c:'AI · ML', d:'AI로 모이는 멤버십 커뮤니티', k:'website'},
+  {n:'AI 워크스페이스', s:'main-landing.png', c:'AI · ML', d:'AI로 5분 만에 웹을 만드는 워크스페이스', k:'website'},
+  {n:'토스 핀테크', s:'toss-im-landing.png', c:'핀테크 · 결제', d:'신뢰감을 주는 핀테크 스타일 랜딩', k:'website'},
+  {n:'릴레이트 CRM', s:'relate-kr-landing.png', c:'마케팅 · 영업', d:'심플한 B2B 영업 CRM 소개', k:'website'},
+  {n:'트래킹 보드', s:'trackit-so-landing.png', c:'데이터 분석', d:'대시보드 중심의 데이터 도구 랜딩', k:'website'},
+  {n:'벤처 포트', s:'antler-co-landing.png', c:'스타트업 · VC', d:'포트폴리오를 담는 VC 소개 사이트', k:'website'},
+  {n:'루프 메일', s:'loops-so-landing.png', c:'마케팅 · 영업', d:'소프트웨어 팀을 위한 이메일 서비스', k:'website'},
+  {n:'소날리 인사이트', s:'sonarly-dev-landing.png', c:'데이터 분석', d:'버그를 빨리 찾는 인사이트 툴', k:'website'},
+  {n:'커서 에디터', s:'cursor-com-landing.png', c:'개발자 도구', d:'다크 톤의 코드 에디터 소개', k:'website'},
+  {n:'기억의 서재', s:'claude-mem-ai-landing.png', c:'AI · ML', d:'컨텍스트를 기억하는 AI 서비스', k:'website'},
+  {n:'컨덕터 빌드', s:'conductor-build-landing.png', c:'개발자 도구', d:'타이포 중심의 빌드 도구 랜딩', k:'website'},
+  {n:'캡 프로덕트', s:'cap-so-landing.png', c:'생산성 · 협업', d:'데모 중심의 화면 녹화 툴 랜딩', k:'website'},
+  {n:'왓타임', s:'whattime-landing.png', c:'생산성 · 협업', d:'간편한 일정 관리 서비스', k:'website'},
+  {n:'스마트 셀러', s:'hookable-ai-landing.png', c:'이커머스', d:'AI로 상세페이지를 만드는 커머스 툴', k:'website'},
+  {n:'그리팅', s:'greetinghr-landing.png', c:'HR · 채용', d:'채용 성공을 돕는 HR 서비스 랜딩', k:'website'},
+  {n:'퀵 스토어', s:'loadfast-store-landing.png', c:'이커머스', d:'타이포가 돋보이는 미니멀 스토어', k:'website'},
+  {n:'유저밴드', s:'userband-com-landing.png', c:'데이터 분석', d:'SaaS 유저 서포트 에이전트', k:'website'},
+  {n:'데이터 나침반', s:'datafa-st-landing.png', c:'데이터 분석', d:'수익 중심 애널리틱스 대시보드', k:'website'},
+  {n:'쉽패스트 물류', s:'shipfa-st-landing.png', c:'운영 · 물류', d:'빠른 배송을 강조하는 물류 랜딩', k:'website'},
+  {n:'코드 가속기', s:'codefa-st-landing.png', c:'개발자 도구', d:'코딩 학습 여정을 담은 교육 랜딩', k:'website'},
+  {n:'라녹스 솔루션', s:'lanorx-com-landing.png', c:'생산성 · 협업', d:'첫 가입자를 모으는 그로스 랜딩', k:'website'},
+  {n:'발명의 숲', s:'patenty-ai-landing.png', c:'AI · ML', d:'AI와 협업하는 특허 워크스페이스', k:'website'},
+  {n:'딥 인사이트', s:'deepcon-ai-landing.png', c:'AI · ML', d:'코딩 에이전트용 컨텍스트 도구', k:'website'},
+  {n:'슈퍼빌링', s:'superbilling-io-landing.png', c:'핀테크 · 결제', d:'3분 만에 연동하는 구독 결제', k:'website'},
+  {n:'코드 래빗', s:'coderabbit-ai-landing.png', c:'개발자 도구', d:'리뷰 시간을 줄이는 AI 코드 리뷰', k:'website'},
+  {n:'시큐어 가드', s:'clerk-com-landing.png', c:'개발자 도구', d:'인증부터 유저 관리까지 보안 랜딩', k:'website'},
+  {n:'채널 브릿지', s:'channel-io-landing.png', c:'마케팅 · 영업', d:'고객 상담을 위한 메시징 랜딩', k:'website'},
+  {n:'아임웹', s:'imweb-me-landing.png', c:'생산성 · 협업', d:'운영하기 쉬운 쇼핑몰 빌더 소개', k:'website'},
+  {n:'런치패드', s:'ycombinator-com-landing.png', c:'스타트업 · VC', d:'액셀러레이터형 스타트업 소개', k:'website'},
+  {n:'볼타 파이낸스', s:'bolta-io-landing.png', c:'핀테크 · 결제', d:'재무 AI 어시스턴트 랜딩', k:'website'},
+];
+/* ═══ Lucide 아이콘 (공식 SVG path · strokeWidth 2) ═══ */
+const LU = {
+  'layout-grid':'<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
+  'bot':'<path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>',
+  'code':'<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+  'megaphone':'<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
+  'bar-chart-3':'<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+  'zap':'<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+  'credit-card':'<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>',
+  'rocket':'<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+  'shopping-bag':'<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>',
+  'coffee':'<path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/>',
+  'users':'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  'package':'<path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/>',
+  'globe':'<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+  'smartphone':'<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>',
+  'sparkles':'<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>',
+};
+const icon = (name, size=14) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${LU[name]}</svg>`;
+const CAT_ICONS = {'AI · ML':'bot','개발자 도구':'code','마케팅 · 영업':'megaphone','데이터 분석':'bar-chart-3','생산성 · 협업':'zap','핀테크 · 결제':'credit-card','스타트업 · VC':'rocket','이커머스':'shopping-bag','식음료':'coffee','HR · 채용':'users','운영 · 물류':'package'};
+/* 카테고리별 상세 콘텐츠 (시안용 제안 카피) */
+const CAT_DETAIL = {
+  'AI · ML':      {hl:['반응형 디자인','AI 데모 섹션','대기자 폼','SEO 기본 설정','AI 수정 지원'], feat:['핵심 기능을 보여주는 데모/스크린샷 섹션','사전 등록·대기자 명단 수집 폼','요금제·FAQ 섹션','문의하기 연동'], p:'AI 제품이나 서비스를 준비 중인 팀. 출시 전 랜딩으로 관심 고객을 모으고 싶은 분.'},
+  '개발자 도구':   {hl:['반응형 디자인','다크 테마','코드 하이라이트','SEO 기본 설정','AI 수정 지원'], feat:['제품 데모·스크린샷 쇼케이스','기능별 소개 섹션','도입 문의 폼','문서/가이드 링크 구조'], p:'개발자 대상 제품을 만드는 팀. 기술적 신뢰감을 주는 소개 페이지가 필요한 분.'},
+  '마케팅 · 영업': {hl:['반응형 디자인','전환 최적화','리드 수집 폼','SEO 기본 설정','AI 수정 지원'], feat:['핵심 가치 제안 히어로','고객 사례·후기 섹션','리드 수집 폼 — 접수 내역 관리 화면 연동','CTA 반복 배치 구조'], p:'서비스 도입 문의와 상담 신청을 온라인으로 받고 싶은 마케팅·영업 팀.'},
+  '데이터 분석':   {hl:['반응형 디자인','대시보드 쇼케이스','지표 시각화','SEO 기본 설정','AI 수정 지원'], feat:['대시보드 스크린샷 중심 히어로','지표·차트 소개 섹션','무료 체험 신청 폼','요금제 비교 섹션'], p:'데이터 제품을 소개해야 하는 팀. 숫자와 화면으로 설득하는 페이지가 필요한 분.'},
+  '생산성 · 협업': {hl:['반응형 디자인','제품 데모 영상','기능 비교','SEO 기본 설정','AI 수정 지원'], feat:['데모 영상/GIF 임베드 섹션','활용 시나리오별 소개','팀 도입 문의 폼','통합(연동) 소개 섹션'], p:'협업 툴이나 생산성 서비스를 알리고 싶은 팀. 사용 장면을 보여주고 싶은 분.'},
+  '핀테크 · 결제': {hl:['반응형 디자인','신뢰 요소 강화','보안 배지','SEO 기본 설정','AI 수정 지원'], feat:['신뢰를 주는 수치·파트너 로고 섹션','연동 절차 3단계 안내','도입 문의 폼','보안·규정 안내 섹션'], p:'금융·결제 서비스를 운영하는 팀. 첫인상에서 신뢰를 얻어야 하는 분.'},
+  '스타트업 · VC': {hl:['반응형 디자인','포트폴리오 그리드','팀 소개','SEO 기본 설정','AI 수정 지원'], feat:['포트폴리오·투자 실적 그리드','팀·파트너 소개 섹션','지원/컨택 폼','뉴스·인사이트 섹션'], p:'투자사, 액셀러레이터, 창업 지원 기관. 실적과 철학을 함께 보여주고 싶은 분.'},
+  '이커머스':      {hl:['반응형 디자인','상품 쇼케이스','구매 전환 최적화','SEO 기본 설정','AI 수정 지원'], feat:['상품 진열·쇼케이스 섹션','프로모션 배너 구조','구매/주문 연결 CTA','고객 후기 섹션'], p:'온라인으로 상품을 판매하는 사장님. 상품이 돋보이는 페이지가 필요한 분.'},
+  '식음료':        {hl:['반응형 디자인','메뉴 쇼케이스','매장 안내','SEO 기본 설정','AI 수정 지원'], feat:['시그니처 메뉴 쇼케이스','매장 위치 지도 + 영업시간','예약·문의 연결 버튼','인스타그램 피드 연동'], p:'카페, 식당, 베이커리 사장님. 매장의 무드를 온라인으로 전하고 싶은 분.'},
+  'HR · 채용':     {hl:['반응형 디자인','채용 공고 구조','지원 폼','SEO 기본 설정','AI 수정 지원'], feat:['채용 공고 리스트 구조','기업 문화 소개 섹션','지원서 접수 폼','복지·혜택 안내 섹션'], p:'채용 페이지가 필요한 회사, 또는 HR 서비스를 운영하는 팀.'},
+  '운영 · 물류':   {hl:['반응형 디자인','프로세스 안내','견적 문의','SEO 기본 설정','AI 수정 지원'], feat:['서비스 프로세스 단계 안내','배송·처리 현황 소개 섹션','견적·도입 문의 폼','파트너 로고 섹션'], p:'물류·운영 서비스를 제공하는 회사. 프로세스를 명확히 보여주고 싶은 분.'},
+};
+const slug = s => s.replace('.png','');  // 예: wedding-front-landing.png → wedding-front-landing
+
+/* 탭 렌더 (전체 + 실서비스 12종, 개수 자동 계산) */
+const counts = {};
+T.forEach(t=>counts[t.c]=(counts[t.c]||0)+1);
+const tabsEl = document.getElementById('tabs');
+tabsEl.innerHTML = `<button class="tab on" data-cat="all"><span class="ic">${icon('layout-grid')}</span>전체 <small>${T.length}</small></button>` +
+  `<div class="tabs-rest">` +
+  Object.keys(CAT_ICONS).filter(c=>counts[c]).map(c=>
+    `<button class="tab" data-cat="${c}"><span class="ic">${icon(CAT_ICONS[c])}</span>${c.replace(/ · /g,'·')} <small>${counts[c]}</small></button>`).join('') +
+  `</div>`;
+
+/* 카드 렌더 */
+const grid = document.getElementById('grid');
+const relGrid = document.getElementById('relGrid');
+const favs = new Set();
+let current = T;
+function heartSVG(){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';}
+function cardHTML(t){
+  const gi = T.indexOf(t);
+  return `<button class="card" onclick="openDetail(${gi})">
+    <div class="shotwrap">
+      <span class="badge">${t.c.replace(/ · /g,'·')}</span>
+      <span class="fav ${favs.has(gi)?'active':''}" role="button" tabindex="0" aria-label="즐겨찾기" onclick="event.stopPropagation();toggleFav(this,${gi})">${heartSVG()}</span>
+      <img class="thumb" src="${CDN+t.s}" alt="${t.n}" loading="lazy">
+      <div class="ovl"><span class="btn btn-ghost" role="button">미리보기</span><span class="btn btn-accent" role="button">사이트 만들기</span></div>
+    </div>
+    <div class="cardtext">
+      <div class="tline"><span class="name">${t.n}</span><span class="dash">—</span><span class="desc">${t.d}</span></div>
+      <div class="meta"><span>${t.k==='app' ? icon('smartphone',13)+'앱' : icon('globe',13)+'웹사이트'}</span></div>
+    </div>
+  </button>`;
+}
+function toggleFav(el, i){ favs.has(i)?favs.delete(i):favs.add(i); el.classList.toggle('active'); }
+function render(cat){
+  current = cat==='all' ? T : T.filter(t=>t.c===cat);
+  grid.innerHTML = current.map(cardHTML).join('');
+  document.getElementById('count').textContent = current.length + '개';
+  document.getElementById('catline').textContent = cat==='all' ? '모든 템플릿' : cat.replace(/ · /g,'·') + ' 템플릿';
+}
+document.querySelectorAll('.tab').forEach(tb => tb.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  tb.classList.add('on');
+  render(tb.dataset.cat);
+  // 하단 줄의 카테고리 선택 시 접어서 선택 결과에 집중
+  tabsShell.classList.remove('open');
+  tabsMore.setAttribute('aria-expanded','false');
+}));
+
+/* 카테고리 더보기 펼침/접힘 */
+const tabsShell = document.getElementById('tabsShell');
+const tabsMore = document.getElementById('tabsMore');
+tabsMore.addEventListener('click', () => {
+  const open = tabsShell.classList.toggle('open');
+  tabsMore.setAttribute('aria-expanded', open);
+});
+
+/* 상세 뷰 */
+const detail = document.getElementById('detail');
+function openDetail(gi){
+  const t = T[gi];
+  const cd = CAT_DETAIL[t.c] || CAT_DETAIL['마케팅 · 영업'];
+  document.getElementById('dTitle').textContent = t.n;
+  document.getElementById('dCrumbName').textContent = t.n;
+  document.getElementById('dCrumbCat').textContent = t.c.replace(/ · /g,'·');
+  document.getElementById('dType').textContent = t.k==='app' ? '앱 템플릿' : '웹사이트 템플릿';
+  const pvUrl = 'https://registry.aiapp.link/live-preview/' + slug(t.s);
+  document.getElementById('dUrl').textContent = pvUrl.replace('https://','');
+  const pvFrame = document.getElementById('pvFrame');
+  const pvLoading = document.getElementById('pvLoading');
+  pvLoading.style.display = 'flex';
+  pvFrame.onload = () => { if(pvFrame.src !== 'about:blank') pvLoading.style.display = 'none'; };
+  pvFrame.src = pvUrl;
+  document.getElementById('dDesc').textContent = t.d + '. 시작 후 AI에게 원하는 내용을 말하면 문구·사진·구성이 자동으로 바뀝니다.';
+  document.getElementById('dHl').innerHTML = cd.hl.map(x=>`<span>${x}</span>`).join('');
+  document.getElementById('dFeat').innerHTML = cd.feat.map(x=>`<li>${x}</li>`).join('');
+  document.getElementById('dPersona').textContent = cd.p;
+  document.getElementById('dStatType').innerHTML = t.k==='app' ? icon('smartphone',13)+'앱' : icon('globe',13)+'웹사이트';
+  document.getElementById('dStatCat').innerHTML = icon(CAT_ICONS[t.c],13) + t.c.replace(/ · /g,'·');
+  const rel = T.filter(x=>x!==t && x.c===t.c).concat(T.filter(x=>x!==t && x.c!==t.c)).slice(0,3);
+  relGrid.innerHTML = rel.map(cardHTML).join('');
+  detail.classList.add('open');
+  detail.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+function closeDetail(){
+  detail.classList.remove('open');
+  document.body.style.overflow='';
+  document.getElementById('pvFrame').src = 'about:blank';  // 프리뷰 정지
+}
+function setDev(btn, mobile){
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('pvInner').classList.toggle('mobile', mobile);
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeDetail(); closeLogin(); } });
+
+/* ═══ 로그인 모달 (홈과 동일 로직) ═══ */
+function openLogin(mode){
+  switchMode(mode || 'login');
+  document.getElementById('loginModal').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeLogin(){
+  document.getElementById('loginModal').classList.remove('on');
+  if(!detail.classList.contains('open')) document.body.style.overflow='';
+}
+function switchMode(mode){
+  const title = document.getElementById('loginTitle');
+  const sub = document.getElementById('loginSub');
+  const submit = document.getElementById('modalSubmit');
+  const foot = document.getElementById('modalFoot');
+  if(mode==='signup'){
+    title.textContent='시작해 볼까요?';
+    sub.textContent='3초 만에 가입하고, 아이디어를 현실로 만들어 보세요.';
+    submit.textContent='이메일로 가입하기';
+    foot.innerHTML='이미 계정이 있으신가요? <a href="#" onclick="switchMode(\'login\');return false;">로그인</a>';
+  }else{
+    title.textContent='다시 오신 걸 환영해요';
+    sub.textContent='로그인하고 이어서 만들어 보세요.';
+    submit.textContent='로그인';
+    foot.innerHTML='아직 계정이 없으신가요? <a href="#" onclick="switchMode(\'signup\');return false;">회원가입</a>';
+  }
+}
+/* 로그인 상태 관리 (홈과 동일 키 공유 → 홈에서 로그인하면 여기서도 유지) */
+window.__aiappLoggedIn = false;
+function isLoggedIn(){
+  if(window.__aiappLoggedIn) return true;
+  try{ return !!localStorage.getItem('aiapp_logged_in'); }catch(e){ return false; }
+}
+function setLoggedIn(v){
+  window.__aiappLoggedIn = !!v;
+  try{ localStorage.setItem('aiapp_logged_in', v?'1':''); }catch(e){}
+  const out = document.getElementById('authLoggedOut');
+  const inn = document.getElementById('authLoggedIn');
+  if(out) out.style.display = v ? 'none' : 'flex';
+  if(inn) inn.style.display = v ? 'flex' : 'none';
+}
+function logout(){ setLoggedIn(false); }
+function socialLogin(provider){ setLoggedIn(true); closeLogin(); }
+setLoggedIn(isLoggedIn());
+
+/* reveal */
+const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target);} }),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+render('all');
+</script>
+</body>
+</html>
