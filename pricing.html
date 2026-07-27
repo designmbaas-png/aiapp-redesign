@@ -146,12 +146,23 @@ img{max-width:100%;}
 .nav-drawer-badge .mc-flag{display:block;flex:none;width:18px;height:13px;}
 .nav-drawer-badge .mc-tx{font-size:12px;font-weight:800;color:var(--ink);letter-spacing:-.01em;}
 body.nav-open{overflow:hidden;}
-@media(min-width:881px){.nav-drawer,.nav-overlay{display:none!important;}}
+/* 햄버거/드로어 미사용 — 모바일에서도 메뉴를 항상 노출(가로 스크롤) */
+.gnb-toggle,.nav-drawer,.nav-overlay{display:none!important;}
 @media(max-width:880px){
   .gnb-badge{display:none;}
-  .gnb nav{display:none;}
-  .gnb .util{display:none;}
-  .gnb-toggle{display:inline-flex;margin-left:auto;}
+  .gnb .util .lang{display:none;}
+  .gnb-in{gap:10px;height:64px;}
+  /* 6개 메뉴를 한 줄 가로 스크롤 바로 항상 표시 */
+  .gnb nav{position:static;transform:none;display:flex;flex:1 1 auto;min-width:0;justify-content:flex-start;gap:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;white-space:nowrap;font-size:14px;padding:4px 0;
+    -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);}
+  .gnb nav::-webkit-scrollbar{display:none;}
+  .gnb nav a{flex:none;padding:6px 0;}
+  .gnb .util{display:flex;margin-left:8px;flex:none;gap:10px;}
+  .gnb .btn{padding:8px 14px;font-size:13px;}
+}
+@media(max-width:560px){
+  /* 아주 좁은 화면: 보조 텍스트 링크는 감추고 핵심 CTA만 유지 */
+  .gnb .util #authLoggedOut > a:not(.btn),.gnb .util #authLoggedIn > a:not(.btn){display:none;}
 }
 
 /* ─── 8. Footer ─── */
