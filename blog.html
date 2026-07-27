@@ -112,11 +112,15 @@ img{max-width:100%;}
 .gnb-badge .check{color:var(--accent);font-weight:800;}
 .gnb-badge .badge-full{display:inline;}
 .gnb-badge .badge-short{display:none;}
-@media(max-width:1280px){.gnb nav{position:static;transform:none;flex:1;justify-content:center;gap:20px;font-size:14px;}}
-@media(max-width:1160px){
+/* nav는 컨테이너(1360px) 기준 항상 절대 중앙 정렬(Home과 동일)로 유지.
+   폭이 좁아질수록 우측 util 요소를 순차적으로 접어 중앙 nav와 겹치지 않게 한다. */
+@media(max-width:1280px){.gnb nav{gap:20px;font-size:14px;}}
+@media(max-width:1230px){
   .gnb-badge .badge-full{display:none;}
   .gnb-badge .badge-short{display:inline;}
 }
+@media(max-width:1160px){.gnb .util .lang{display:none;}}
+@media(max-width:1024px){.gnb-badge{display:none;}}
 .gnb .btn{padding:9px 18px;font-size:13.5px;}
 .gnb-my{gap:7px!important;padding-left:6px!important;}
 .gnb-my .my-av{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.25);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}
