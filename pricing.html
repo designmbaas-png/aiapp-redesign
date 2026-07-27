@@ -119,7 +119,12 @@ img{max-width:100%;}
   .gnb-badge .badge-short{display:inline;}
 }
 @media(max-width:1160px){.gnb .util .lang{display:none;}}
-@media(max-width:1024px){.gnb-badge{display:none;}}
+/* Tablet/Mobile: '모두의 창업' CTA를 원형 아이콘 버튼(FAB형)으로 — Home 깃발 아이콘·배지 컬러 그대로 재사용 */
+@media(max-width:1024px){
+  .gnb-badge{width:46px;height:46px;padding:0;border-radius:50%;justify-content:center;gap:0;flex:none;}
+  .gnb-badge .mc-logo,.gnb-badge .mc-tx{display:none;}
+  .gnb-badge .mc-flag{display:block;width:22px;height:16px;}
+}
 .gnb .btn{padding:9px 18px;font-size:13.5px;}
 .gnb-my{gap:7px!important;padding-left:6px!important;}
 .gnb-my .my-av{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.25);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}
@@ -153,15 +158,14 @@ body.nav-open{overflow:hidden;}
 /* 햄버거/드로어 미사용 — 모바일에서도 메뉴를 항상 노출(가로 스크롤) */
 .gnb-toggle,.nav-drawer,.nav-overlay{display:none!important;}
 @media(max-width:880px){
-  .gnb-badge{display:none;}
   .gnb .util .lang{display:none;}
-  .gnb-in{gap:10px;height:64px;}
-  /* 6개 메뉴를 한 줄 가로 스크롤 바로 항상 표시 */
-  .gnb nav{position:static;transform:none;display:flex;flex:1 1 auto;min-width:0;justify-content:flex-start;gap:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;white-space:nowrap;font-size:14px;padding:4px 0;
-    -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);}
+  .gnb-in{gap:12px;height:64px;}
+  /* 6개 메뉴: 공간 있으면 가운데, 좁으면 좌우 스크롤(safe center) — 좌우 균형 유지 */
+  .gnb nav{position:static;transform:none;display:flex;flex:1 1 auto;min-width:0;justify-content:safe center;gap:18px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;white-space:nowrap;font-size:14px;padding:4px 0;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);}
   .gnb nav::-webkit-scrollbar{display:none;}
   .gnb nav a{flex:none;padding:6px 0;}
-  .gnb .util{display:flex;margin-left:8px;flex:none;gap:10px;}
+  .gnb .util{display:flex;flex:none;align-items:center;gap:10px;margin-left:0;}
   .gnb .btn{padding:8px 14px;font-size:13px;}
 }
 @media(max-width:560px){
