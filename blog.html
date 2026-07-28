@@ -820,17 +820,6 @@ function closeNav(){ const cb=navCb(); if(cb){ cb.checked=false; cb.dispatchEven
   upd();
 })();
 
-// ─── 요금제: 기능 비교표 '전체 보기' 확장(모바일) ───
-(function(){
-  const btn = document.querySelector('.cmp-more');
-  const table = document.getElementById('cmpTable');
-  if(!btn || !table) return;
-  btn.addEventListener('click', ()=>{
-    const open = table.classList.toggle('show-all');
-    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    btn.textContent = open ? '접기' : '전체 보기';
-  });
-})();
 
 </script>
 <script>
