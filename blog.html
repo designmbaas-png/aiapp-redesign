@@ -794,6 +794,32 @@ function closeNav(){ const cb=navCb(); if(cb){ cb.checked=false; cb.dispatchEven
   wrap.querySelectorAll('.agent').forEach(a=>mo.observe(a,{attributes:true, attributeFilter:['class']}));
 })();
 
+// ─── 요금제: 엔터프라이즈 상세 기능 아코디언(모바일) ───
+(function(){
+  const btn = document.querySelector('.ent-feats-toggle');
+  const feats = document.getElementById('entFeats');
+  if(!btn || !feats) return;
+  btn.addEventListener('click', ()=>{
+    const open = feats.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if(btn.firstChild) btn.firstChild.nodeValue = open ? '포함 기능 접기' : '포함 기능 보기';
+  });
+})();
+
+// ─── 요금제: 기능 비교표 가로 스크롤 — 끝에 도달하면 우측 페이드 숨김 ───
+(function(){
+  const scroller = document.querySelector('.cmp-wrap');
+  const outer = document.querySelector('.cmp-scroll');
+  if(!scroller || !outer) return;
+  const upd = ()=>{
+    const atEnd = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 2;
+    outer.classList.toggle('at-end', atEnd);
+  };
+  scroller.addEventListener('scroll', upd, {passive:true});
+  window.addEventListener('resize', upd, {passive:true});
+  upd();
+})();
+
 </script>
 <script>
 /* ═══ 카테고리 — 여기에 추가만 하면 탭·필터·빈 상태가 자동 확장됨 ═══ */

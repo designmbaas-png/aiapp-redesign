@@ -428,39 +428,53 @@ button{font-family:var(--font);}
   .faq-head{position:static;}
 }
 @media(max-width:620px){
-  /* 카드: 좌우 여백 + 넉넉한 내부 패딩으로 편안한 모바일 UX */
-  .cards{grid-template-columns:1fr;gap:16px;padding:0 6px;}
-  .pcard{padding:28px 22px 24px;border-radius:18px;}
-  .pcard.featured{grid-column:span 1;}
-  /* 정보 계층: 플랜명 → 대상 → 가격 강조 */
+  /* B-1. 본문 가독성: 한글 어절 단위 줄바꿈 + 줄 균형 */
+  .hero .lead,.sub,.h2,.cmp-title,.pname,.pfor,.feat li,.cmp-notes li,.ent p{word-break:keep-all;overflow-wrap:break-word;text-wrap:pretty;}
+  .hero .lead,.sub{line-height:1.65;}
+
+  /* B-2. 요금제 카드: 세로 나열 → 가로 스크롤 캐러셀(스크롤 최소화, 스와이프로 플랜 비교) */
+  .cards{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:14px;padding:6px 4px 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+    -webkit-mask-image:linear-gradient(90deg,#000 93%,transparent);mask-image:linear-gradient(90deg,#000 93%,transparent);}
+  .cards::-webkit-scrollbar{display:none;}
+  .pcard{flex:0 0 86%;scroll-snap-align:center;padding:26px 22px 24px;border-radius:18px;}
+  .pcard.featured{order:-1;grid-column:auto;}       /* 비즈니스(추천) 먼저, span 리셋 */
   .pname{font-size:19px;}
   .pfor{font-size:13px;line-height:1.5;min-height:0;margin-top:8px;}
   .price-box{min-height:0;margin-top:18px;}
   .badge-top{font-size:12px;padding:5px 15px;top:-13px;}
-  .was{font-size:12.5px;gap:8px;}
-  .off{font-size:11px;padding:3px 8px;}
-  /* 가격 강조 */
-  .price .num{font-size:34px;}
-  .price .num.sm{font-size:22px;}
-  .price .unit{font-size:13px;}
+  .was{font-size:12.5px;gap:8px;} .off{font-size:11px;padding:3px 8px;}
+  .price .num{font-size:34px;} .price .num.sm{font-size:22px;} .price .unit{font-size:13px;}
   .pay-note{font-size:12.5px;margin-top:8px;}
-  /* 버튼-설명 간 충분한 간격 + 터치 영역 확보 */
-  .pcta{margin-top:20px;}
-  .pcta .btn{padding:14px 18px;font-size:15px;}
+  .pcta{margin-top:20px;} .pcta .btn{padding:14px 18px;font-size:15px;}
   .pdivider{margin:20px 0 16px;}
-  /* 기능 목록 가독성 */
-  .feat{gap:11px;}
-  .feat li{font-size:13.5px;line-height:1.5;}
-  .cmp-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-  .cmp{min-width:680px;}
+  .feat{gap:11px;} .feat li{font-size:13.5px;line-height:1.5;}
+
+  /* B-3. 전체 기능 비교: cmp-wrap의 overflow:hidden이 min-width 표를 잘라 스크롤 불가였음
+     → cmp-wrap 자체를 가로 스크롤 컨테이너로 전환 + 첫 열 sticky + 우측 페이드 힌트 */
+  .cmp-scroll{position:relative;}
+  .cmp-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;}
+  .cmp{min-width:620px;}
   .cmp thead th{position:static;}
-  .ent{padding:40px 24px;}
-  .ent-feats{grid-template-columns:1fr 1fr;}
+  .cmp th:first-child,.cmp td:first-child{position:sticky;left:0;z-index:2;background:#fff;min-width:120px;box-shadow:1px 0 0 var(--line);}
+  .cmp thead th:first-child{z-index:3;}
+  .cmp tbody tr.cat td{position:sticky;left:0;z-index:1;}
+  .cmp-scroll::after{content:"";position:absolute;top:0;right:0;bottom:0;width:36px;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0),#fff 82%);z-index:4;transition:opacity .2s;}
+  .cmp-scroll.at-end::after{opacity:0;}
+
+  /* B-4. 엔터프라이즈 배너: 상세 기능 접기(아코디언) — 핵심(제목·설명·CTA)만 노출 */
+  .ent{padding:36px 22px;}
+  .ent-feats{grid-template-columns:1fr 1fr;gap:8px 16px;overflow:hidden;max-height:0;opacity:0;margin-top:0;transition:max-height .28s ease,opacity .2s ease,margin-top .28s ease;}
+  .ent-feats.open{max-height:340px;opacity:1;margin-top:14px;}
+  .ent-feats-toggle{display:inline-flex;align-items:center;gap:6px;margin-top:14px;min-height:44px;padding:0 4px;background:none;border:none;color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;}
+  .ent-feats-toggle::after{content:"⌄";font-size:16px;line-height:1;transition:transform .2s;}
+  .ent-feats-toggle[aria-expanded="true"]::after{transform:rotate(180deg);}
+  .ent-cta .btn{min-height:48px;}
 }
+@media(min-width:621px){ .ent-feats-toggle{display:none;} }
 @media(max-width:400px){
-  .pcard{padding:24px 18px 22px;}
+  .pcard{flex:0 0 90%;padding:24px 18px 22px;}
   .price .num{font-size:31px;}
-  .ent-feats{grid-template-columns:1fr;}
+  .ent-feats.open{grid-template-columns:1fr;}
 }
 </style>
 </head>
@@ -553,7 +567,7 @@ button{font-family:var(--font);}
       </div>
     </div>
 
-    <div class="cards reveal">
+    <div class="cards reveal" tabindex="0" role="group" aria-label="요금제 플랜 목록 — 모바일에서는 좌우로 스와이프해 비교하세요">
 
       <!-- 무료 -->
       <article class="pcard">
@@ -669,7 +683,7 @@ button{font-family:var(--font);}
     <h2 class="cmp-title reveal">전체 기능 비교</h2>
 
     <div class="reveal cmp-scroll">
-      <div class="cmp-wrap">
+      <div class="cmp-wrap" tabindex="0" role="region" aria-label="요금제 기능 비교표 — 모바일에서는 좌우로 스크롤하세요">
         <table class="cmp">
           <thead>
             <tr>
@@ -728,7 +742,8 @@ button{font-family:var(--font);}
           <span class="eyebrow">Enterprise</span>
           <h2>대규모 조직을 위한<br>맞춤형 솔루션</h2>
           <p>보안, 규정 준수, 전담 지원이 필요한 팀을 위해 AiApp을 조직 환경에 맞게 구축해 드립니다.</p>
-          <ul class="ent-feats">
+          <button class="ent-feats-toggle" type="button" aria-expanded="false" aria-controls="entFeats">포함 기능 보기</button>
+          <ul class="ent-feats" id="entFeats">
             <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Custom AI</li>
             <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>On-premise</li>
             <li><span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>SSO</li>
@@ -1069,6 +1084,32 @@ function closeNav(){ const cb=navCb(); if(cb){ cb.checked=false; cb.dispatchEven
     if(active) active.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
   });
   wrap.querySelectorAll('.agent').forEach(a=>mo.observe(a,{attributes:true, attributeFilter:['class']}));
+})();
+
+// ─── 요금제: 엔터프라이즈 상세 기능 아코디언(모바일) ───
+(function(){
+  const btn = document.querySelector('.ent-feats-toggle');
+  const feats = document.getElementById('entFeats');
+  if(!btn || !feats) return;
+  btn.addEventListener('click', ()=>{
+    const open = feats.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if(btn.firstChild) btn.firstChild.nodeValue = open ? '포함 기능 접기' : '포함 기능 보기';
+  });
+})();
+
+// ─── 요금제: 기능 비교표 가로 스크롤 — 끝에 도달하면 우측 페이드 숨김 ───
+(function(){
+  const scroller = document.querySelector('.cmp-wrap');
+  const outer = document.querySelector('.cmp-scroll');
+  if(!scroller || !outer) return;
+  const upd = ()=>{
+    const atEnd = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 2;
+    outer.classList.toggle('at-end', atEnd);
+  };
+  scroller.addEventListener('scroll', upd, {passive:true});
+  window.addEventListener('resize', upd, {passive:true});
+  upd();
 })();
 
 </script>
