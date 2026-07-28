@@ -588,7 +588,7 @@ button{font-family:var(--font);}
   if(reduce){ targets.forEach(el=>el.classList.add('on')); return; }
   const io = new IntersectionObserver((entries)=>{
     entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); } });
-  },{threshold:.12, rootMargin:'0px 0px -8% 0px'});
+  },{threshold:0, rootMargin:'0px 0px -8% 0px'});
   targets.forEach(el=>io.observe(el));
 })();
 

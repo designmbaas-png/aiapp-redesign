@@ -533,7 +533,7 @@ button{font-family:var(--font);}
 </div>
 
 <!-- ═══ 그리드 ═══ -->
-<main class="main reveal">
+<main class="main">
   <div class="listhead"><span class="catline" id="catline">모든 템플릿</span><span class="count" id="count">32개</span></div>
   <!-- 정적 프리렌더(SSG): JS 없이도 목록 노출. JS 로드 시 아래 데이터로 필터링 유지 -->
   <div class="grid" id="grid" role="list">
@@ -752,7 +752,7 @@ button{font-family:var(--font);}
   if(reduce){ targets.forEach(el=>el.classList.add('on')); return; }
   const io = new IntersectionObserver((entries)=>{
     entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); } });
-  },{threshold:.12, rootMargin:'0px 0px -8% 0px'});
+  },{threshold:0, rootMargin:'0px 0px -8% 0px'});
   targets.forEach(el=>io.observe(el));
 })();
 
