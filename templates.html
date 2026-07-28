@@ -423,18 +423,25 @@ button{font-family:var(--font);}
 @media(max-width:600px){
   .hero .lead,.sub,.h2,.name,.desc,.catline,.cardtext{word-break:keep-all;overflow-wrap:break-word;text-wrap:pretty;}
   .hero .lead,.sub{line-height:1.65;}
-  /* 히어로가 뷰포트를 점유해 그리드가 접힘 아래로 밀리던 문제 → 히어로 압축 */
-  .hero{padding:22px 0 12px;}
-  .hero .badge-line{padding:5px 12px;font-size:10px;}
-  .hero h1{font-size:25px;margin-top:10px;line-height:1.26;}
-  .hero .lead{font-size:13.5px;margin-top:8px;}
+  /* 원인: 히어로(188px)가 뷰포트를 과점유 → 그리드가 접힘 아래로 밀림.
+     해결: 히어로 압축(장식 배지 숨김·타이틀 축소·여백 축소)해 첫 카드 1행이 접힘 위로 */
+  .hero{padding:14px 0 10px;}
+  .hero .badge-line{display:none;}              /* 장식용 'AI Templates' 배지 숨김 */
+  .hero h1{font-size:22px;margin-top:0;line-height:1.24;}
+  .hero .lead{font-size:13px;margin-top:6px;line-height:1.5;}
   .grid{gap:16px 14px;}
-  /* 그리드는 JS로 즉시 렌더되지만, 렌더 전 자리를 잡아 레이아웃 시프트(CLS) 방지.
-     썸네일은 .shotwrap{aspect-ratio:16/10}로 이미 높이가 예약됨 */
-  #grid:empty{min-height:70vh;background:
-    repeating-linear-gradient(0deg,transparent 0 8px,transparent 8px),
-    linear-gradient(var(--paper),var(--paper));}
 }
+
+/* 스켈레톤(전 뷰포트 공통·전환용): 실제 카드와 동일 그리드·종횡비(16/10)로 자리를 먼저 확보(CLS 방지).
+   render()가 #grid 내용을 채우면 자동으로 대체됨 → 최종 레이아웃은 데스크톱과 동일(무영향) */
+.skel{border:none;background:none;padding:0;text-align:left;}
+.skel-shot{aspect-ratio:16/10;border-radius:var(--radius);border:1px solid var(--line);
+  background:linear-gradient(100deg,var(--paper) 30%,#EEF1F7 50%,var(--paper) 70%);background-size:220% 100%;
+  animation:skelShine 1.3s ease-in-out infinite;}
+.skel-line{height:12px;border-radius:6px;margin-top:13px;background:#EEF1F7;}
+.skel-line.sm{height:10px;width:60%;margin-top:8px;}
+@keyframes skelShine{to{background-position:-220% 0;}}
+@media(prefers-reduced-motion:reduce){.skel-shot{animation:none;}}
 </style>
 </head>
 <body>
@@ -528,7 +535,14 @@ button{font-family:var(--font);}
 <!-- ═══ 그리드 ═══ -->
 <main class="main reveal">
   <div class="listhead"><span class="catline" id="catline">모든 템플릿</span><span class="count" id="count">32개</span></div>
-  <div class="grid" id="grid"></div>
+  <div class="grid" id="grid" aria-busy="true" aria-label="템플릿 목록 로딩 중">
+    <div class="skel" aria-hidden="true"><div class="skel-shot"></div><div class="skel-line"></div><div class="skel-line sm"></div></div>
+    <div class="skel" aria-hidden="true"><div class="skel-shot"></div><div class="skel-line"></div><div class="skel-line sm"></div></div>
+    <div class="skel" aria-hidden="true"><div class="skel-shot"></div><div class="skel-line"></div><div class="skel-line sm"></div></div>
+    <div class="skel" aria-hidden="true"><div class="skel-shot"></div><div class="skel-line"></div><div class="skel-line sm"></div></div>
+    <div class="skel" aria-hidden="true"><div class="skel-shot"></div><div class="skel-line"></div><div class="skel-line sm"></div></div>
+    <div class="skel" aria-hidden="true"><div class="skel-shot"></div><div class="skel-line"></div><div class="skel-line sm"></div></div>
+  </div>
 </main>
 
 <!-- ═══ 폴백 ═══ -->
@@ -1103,7 +1117,8 @@ function cardHTML(t){
 function toggleFav(el, i){ favs.has(i)?favs.delete(i):favs.add(i); el.classList.toggle('active'); }
 function render(cat){
   current = cat==='all' ? T : T.filter(t=>t.c===cat);
-  grid.innerHTML = current.map(cardHTML).join('');
+  grid.innerHTML = current.map(cardHTML).join('');   // 스켈레톤을 실제 카드로 대체
+  grid.setAttribute('aria-busy','false');
   document.getElementById('count').textContent = current.length + '개';
   document.getElementById('catline').textContent = cat==='all' ? '모든 템플릿' : cat.replace(/ · /g,'·') + ' 템플릿';
 }
