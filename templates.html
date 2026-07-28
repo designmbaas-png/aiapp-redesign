@@ -887,6 +887,19 @@ function closeNav(){ const cb=navCb(); if(cb){ cb.checked=false; cb.dispatchEven
   mq.addEventListener('change', apply);
 })();
 
+// ─── 모바일 Agent Relay 캐러셀: 활성 카드를 화면 안으로 자동 스크롤 ───
+(function(){
+  const wrap = document.getElementById('relayCards');
+  if(!wrap) return;
+  const mq = matchMedia('(max-width:600px)');
+  const mo = new MutationObserver(()=>{
+    if(!mq.matches) return;
+    const active = wrap.querySelector('.agent.active');
+    if(active) active.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
+  });
+  wrap.querySelectorAll('.agent').forEach(a=>mo.observe(a,{attributes:true, attributeFilter:['class']}));
+})();
+
 </script>
 <script>
 /* ═══ 실서비스 데이터 (aiapp.help/templates · cdn.mbaas.kr 썸네일 32종) ═══
