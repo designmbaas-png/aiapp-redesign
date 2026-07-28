@@ -821,6 +821,56 @@ function closeNav(){ const cb=navCb(); if(cb){ cb.checked=false; cb.dispatchEven
 })();
 
 
+// ─── 요금제: 플랜 카드 탭 → 상세 기능(.feat) 인라인 아코디언(모바일) ───
+(function(){
+  const cards = [...document.querySelectorAll('.cards .pcard')];
+  if(!cards.length) return;
+  const mq = matchMedia('(max-width:620px)');
+  const isCTA = (t)=> !!(t.closest && t.closest('.pcta, a, button'));
+
+  cards.forEach((card, i)=>{
+    const feat = card.querySelector('.feat');
+    const name = card.querySelector('.pname');
+    if(!feat) return;
+    feat.id = feat.id || ('planFeat' + i);
+    feat.setAttribute('role','region');
+    if(name) feat.setAttribute('aria-label', name.textContent.trim() + ' 상세 기능');
+
+    card._setOpen = (open)=>{
+      card.classList.toggle('open', open);
+      card.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if(open) requestAnimationFrame(()=>card.scrollIntoView({block:'nearest', behavior:'smooth'}));
+    };
+    card._applyMobile = (on)=>{
+      if(on){
+        card.setAttribute('role','button');
+        card.setAttribute('tabindex','0');
+        card.setAttribute('aria-controls', feat.id);
+        if(!card.hasAttribute('aria-expanded')) card.setAttribute('aria-expanded','false');
+      } else {
+        ['role','tabindex','aria-controls','aria-expanded'].forEach(a=>card.removeAttribute(a));
+        card.classList.remove('open');
+      }
+    };
+    card._applyMobile(mq.matches);
+
+    const activate = (e)=>{
+      if(!mq.matches || isCTA(e.target)) return;
+      const willOpen = card.getAttribute('aria-expanded') !== 'true';
+      cards.forEach(c=>{ if(c !== card && c._setOpen) c._setOpen(false); });  // 한 번에 하나만
+      card._setOpen(willOpen);
+    };
+    card.addEventListener('click', activate);
+    card.addEventListener('keydown', e=>{
+      if((e.key === 'Enter' || e.key === ' ') && mq.matches && !isCTA(e.target)){ e.preventDefault(); activate(e); }
+    });
+  });
+
+  // CTA 클릭이 아코디언 토글로 오작동하지 않도록 전파 차단
+  document.querySelectorAll('.cards .pcta a, .cards .pcta button').forEach(el=>el.addEventListener('click', e=>e.stopPropagation()));
+  mq.addEventListener('change', e=> cards.forEach(c=> c._applyMobile && c._applyMobile(e.matches)));
+})();
+
 </script>
 <script>
 /* ═══ 카테고리 — 여기에 추가만 하면 탭·필터·빈 상태가 자동 확장됨 ═══ */
