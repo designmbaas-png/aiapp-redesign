@@ -179,7 +179,7 @@ footer{border-top:1px solid var(--line);background:#fff;padding:64px 0 32px;}
 .foot-grid a{display:block;font-size:12.5px;color:var(--muted);padding:4px 0;}
 .foot-grid a:hover{color:var(--accent);}
 .foot-desc{font-size:13px;color:var(--muted);margin-top:14px;line-height:1.7;}
-.biz{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-size:11px;color:var(--faint);line-height:1.8;text-align:center;}
+.biz{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-size:11px;color:var(--faint);line-height:1.8;text-align:center;}.biz-line{margin:0;}.biz-line span:not(:last-child)::after{content:" · ";white-space:pre;}.biz-copy{margin:8px 0 0;}
 .biz-check{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;color:var(--muted);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:3px 9px;margin-left:8px;vertical-align:middle;transition:border-color .15s,color .15s;}
 .biz-check:hover{border-color:var(--accent);color:var(--accent);}
 @media(max-width:920px){.foot-grid{grid-template-columns:1fr 1fr;}}
@@ -248,6 +248,11 @@ footer{border-top:1px solid var(--line);background:#fff;padding:64px 0 32px;}
   .foot-toggle.open::after{content:"\2212";}
   .foot-toggle:focus-visible{outline:3px solid rgba(43,92,230,.4);outline-offset:2px;border-radius:6px;}
   .foot-grid > div > a{padding:9px 0;}
+  .biz{text-align:left;line-height:1.7;}
+  .biz-line{margin-bottom:12px;}
+  .biz-line span{display:block;}
+  .biz-line span:not(:last-child)::after{content:none;}
+  .biz-copy{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);text-align:center;}
   .btn{padding:12px 20px;}
   .final-card{padding:44px 22px;border-radius:20px;}
   .mini-prompt{flex-direction:row;}
@@ -496,10 +501,10 @@ button{font-family:var(--font);}
       <div><h6>지원</h6><a href="#">고객 문의</a><a href="#">help@aiapp.help</a><a href="#">070-8648-2750</a></div>
     </div>
     <div class="biz">
-      본사. 부산광역시 금정구 부산대학로50번길 68, 4층 404호(장전동, 피엔유에이벡) · 연구소. 부산광역시 연제구 연제로 24, 206호<br>
-      상호명. (주)엠바스 · CEO. 김정현 · E-mail. help@aiapp.help · 연락처. 070-8648-2750 · 사업자 번호. 128-88-02089<br>
-      통신판매업신고번호. 제2026-부산금정-0312호<a class="biz-check" href="https://www.ftc.go.kr/bizCommPop.do?wrkr_no=1288802089" target="_blank" rel="noopener">사업자정보확인</a> · 통신판매중개업자. 주식회사 엠바스<br>
-      COPYRIGHT(c) 2025 AIAPP. All rights reserved.
+      <p class="biz-line"><span>본사. 부산광역시 금정구 부산대학로50번길 68, 4층 404호(장전동, 피엔유에이벡)</span><span>연구소. 부산광역시 연제구 연제로 24, 206호</span></p>
+      <p class="biz-line"><span>상호명. (주)엠바스</span><span>CEO. 김정현</span><span>E-mail. help@aiapp.help</span><span>연락처. 070-8648-2750</span><span>사업자 번호. 128-88-02089</span></p>
+      <p class="biz-line"><span>통신판매업신고번호. 제2026-부산금정-0312호<a class="biz-check" href="https://www.ftc.go.kr/bizCommPop.do?wrkr_no=1288802089" target="_blank" rel="noopener">사업자정보확인</a></span><span>통신판매중개업자. 주식회사 엠바스</span></p>
+      <p class="biz-copy">COPYRIGHT(c) 2025 AIAPP. All rights reserved.</p>
     </div>
   </div>
 </footer>
