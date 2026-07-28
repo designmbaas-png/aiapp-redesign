@@ -95,8 +95,8 @@ img{max-width:100%;}
 /* ─── 7. GNB (Header Navigation) ─── */
 .gnb{position:sticky;top:0;z-index:50;background:rgba(247,249,252,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
 .gnb-in{position:relative;max-width:1360px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;gap:24px;}
-.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.02em;}
-.logo-img{height:30px;width:auto;display:block;}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.02em;flex:none;}
+.logo-img{height:30px;width:auto;flex:none;display:block;object-fit:contain;}
 .logo-mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--mint));display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:800;}
 .gnb nav{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;gap:24px;font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.01em;white-space:nowrap;}
 .gnb nav a:hover{color:var(--accent);}
@@ -122,9 +122,9 @@ img{max-width:100%;}
 @media(max-width:1160px){.gnb .util .lang{display:none;}}
 /* Tablet/Mobile: '모두의 창업' CTA를 원형 아이콘 버튼(FAB형)으로 — Home 깃발 아이콘·배지 컬러 그대로 재사용 */
 @media(max-width:1024px){
-  .gnb-badge{width:38px;height:38px;padding:0;border-radius:50%;justify-content:center;gap:0;flex:none;}
+  .gnb-badge{width:34px;height:34px;padding:0;border-radius:50%;justify-content:center;gap:0;flex:none;}
   .gnb-badge .mc-logo,.gnb-badge .mc-tx{display:none;}
-  .gnb-badge .mc-flag{display:block;width:16px;height:12px;}
+  .gnb-badge .mc-flag{display:block;width:15px;height:11px;}
 }
 .gnb .btn{padding:9px 18px;font-size:13.5px;}
 .gnb-my{gap:7px!important;padding-left:6px!important;}
@@ -156,17 +156,15 @@ img{max-width:100%;}
 .nav-drawer-badge .mc-flag{display:block;flex:none;width:18px;height:13px;}
 .nav-drawer-badge .mc-tx{font-size:12px;font-weight:800;color:var(--ink);letter-spacing:-.01em;}
 body.nav-open{overflow:hidden;}
-/* 햄버거/드로어 미사용 — 모바일에서도 메뉴를 항상 노출(가로 스크롤) */
-.gnb-toggle,.nav-drawer,.nav-overlay{display:none!important;}
+/* 데스크톱/태블릿(≥881): 드로어·오버레이 완전 비활성. 모바일(≤880)만 햄버거 사용 */
+@media(min-width:881px){.nav-drawer,.nav-overlay{display:none!important;}}
 @media(max-width:880px){
-  .gnb .util .lang{display:none;}
   .gnb-in{gap:12px;height:64px;}
-  /* 6개 메뉴: 공간 있으면 가운데, 좁으면 좌우 스크롤(safe center) — 좌우 균형 유지 */
-  .gnb nav{position:static;transform:none;display:flex;flex:1 1 auto;min-width:0;justify-content:safe center;gap:18px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;white-space:nowrap;font-size:14px;padding:4px 0;
-    -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);}
-  .gnb nav::-webkit-scrollbar{display:none;}
-  .gnb nav a{flex:none;padding:6px 0;}
-  .gnb .util{display:flex;flex:none;align-items:center;gap:10px;margin-left:0;}
+  .gnb nav{display:none;}                 /* 상단 바 메뉴 숨김 → 드로어(햄버거)로 이동 */
+  .gnb .util .lang{display:none;}
+  .gnb-toggle{display:inline-flex;}       /* 햄버거 버튼 노출 */
+  /* '모두의 창업' 원형 아이콘 + '무료로 만들기' CTA는 바에 유지 */
+  .gnb .util{display:flex;flex:none;align-items:center;gap:10px;margin-left:auto;}
   .gnb .btn{padding:8px 14px;font-size:13px;}
 }
 @media(max-width:560px){
@@ -680,21 +678,56 @@ function toast(msg){
   document.addEventListener('keydown', e=>{ if(e.key==='Escape' && m.classList.contains('on')) closeLogin(); });
 })();
 
-// ─── 모바일 내비게이션 드로어 (열고 닫기는 CSS 체크박스가 담당, JS는 보조) ───
+// ─── 모바일 햄버거 드로어 ───
+// 열고 닫기는 CSS 체크박스(:checked)가 담당(JS 없이도 동작), JS는 접근성 강화:
+// aria-expanded, 포커스 트랩, ESC, 링크 클릭 닫기, 포커스 복원
 function navCb(){ return document.getElementById('navToggleCb'); }
-function openNav(){ const cb=navCb(); if(cb){ cb.checked=true; document.body.classList.add('nav-open'); } }
-function closeNav(){ const cb=navCb(); if(cb){ cb.checked=false; document.body.classList.remove('nav-open'); } }
+function openNav(){ const cb=navCb(); if(cb){ cb.checked=true; cb.dispatchEvent(new Event('change')); } }
+function closeNav(){ const cb=navCb(); if(cb){ cb.checked=false; cb.dispatchEvent(new Event('change')); } }
 (function(){
   const cb = navCb();
-  if(!cb) return;
-  const sync = ()=>document.body.classList.toggle('nav-open', cb.checked);
+  const drawer = document.getElementById('navDrawer');
+  const toggle = document.getElementById('navToggle');
+  if(!cb || !drawer || !toggle) return;
+
+  const focusable = ()=>Array.from(drawer.querySelectorAll(
+    'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  )).filter(el=>el.offsetParent !== null);
+
+  function sync(){
+    const open = cb.checked;
+    document.body.classList.toggle('nav-open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
+    if(open){
+      const f = focusable();
+      if(f.length) f[0].focus();
+    } else if(typeof toggle.focus === 'function'){
+      toggle.focus();
+    }
+  }
+  // 초기 접근성 상태
+  toggle.setAttribute('aria-expanded','false');
+  drawer.setAttribute('aria-hidden','true');
+
   cb.addEventListener('change', sync);
-  // ESC 로 닫기
-  document.addEventListener('keydown', e=>{ if(e.key==='Escape' && cb.checked){ cb.checked=false; sync(); } });
+
+  document.addEventListener('keydown', e=>{
+    if(!cb.checked) return;
+    if(e.key === 'Escape'){ cb.checked=false; sync(); return; }
+    if(e.key === 'Tab'){
+      const f = focusable();
+      if(!f.length) return;
+      const first = f[0], last = f[f.length-1];
+      if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+    }
+  });
+
   // 드로어 링크 클릭 시 닫기
-  document.querySelectorAll('.nav-drawer-links a').forEach(a=>a.addEventListener('click', ()=>{ cb.checked=false; sync(); }));
+  drawer.querySelectorAll('.nav-drawer-links a').forEach(a=>a.addEventListener('click', ()=>{ cb.checked=false; sync(); }));
   // 데스크톱으로 넓어지면 자동 닫기
-  matchMedia('(min-width:1025px)').addEventListener('change', e=>{ if(e.matches && cb.checked){ cb.checked=false; sync(); } });
+  matchMedia('(min-width:881px)').addEventListener('change', e=>{ if(e.matches && cb.checked){ cb.checked=false; sync(); } });
   // 라벨(햄버거·닫기·오버레이) 키보드 접근성: Enter/Space 로 토글
   ['navToggle','navClose','navOverlay'].forEach(id=>{
     const el=document.getElementById(id); if(!el) return;
