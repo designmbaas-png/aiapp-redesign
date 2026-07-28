@@ -238,14 +238,18 @@ footer{border-top:1px solid var(--line);background:#fff;padding:64px 0 32px;}
 @media(max-width:600px){
   .section{padding:72px 0;}
   .wrap{padding:0 18px;}
-  .foot-grid{grid-template-columns:1fr 1fr;gap:18px 20px;}
-  .foot-grid > :first-child{grid-column:1 / -1;}
+  /* 푸터: 링크 그룹을 아코디언으로 접어 길이 축소(토글·aria는 site.js). JS 미실행 시 전체 표시(폴백) */
+  .foot-grid{grid-template-columns:1fr;gap:0;}
+  .foot-grid > :first-child{padding-bottom:10px;}
+  .foot-grid > div:not(:first-child){border-top:1px solid var(--line);}
+  .foot-toggle{display:flex;align-items:center;justify-content:space-between;min-height:48px;margin-bottom:0;cursor:pointer;-webkit-user-select:none;user-select:none;}
+  .foot-toggle::after{content:"+";font-size:20px;font-weight:400;line-height:1;color:var(--muted);}
+  .foot-toggle.open::after{content:"\2212";}
+  .foot-toggle:focus-visible{outline:3px solid rgba(43,92,230,.4);outline-offset:2px;border-radius:6px;}
+  .foot-grid > div > a{padding:9px 0;}
   .btn{padding:12px 20px;}
   .final-card{padding:44px 22px;border-radius:20px;}
   .mini-prompt{flex-direction:row;}
-}
-@media(max-width:400px){
-  .foot-grid{grid-template-columns:1fr;}
 }
 
 </style>
@@ -850,6 +854,37 @@ function closeNav(){ const cb=navCb(); if(cb){ cb.checked=false; cb.dispatchEven
       if(e.key==='Enter'||e.key===' '){ e.preventDefault(); cb.checked=(id==='navToggle'); sync(); }
     });
   });
+})();
+
+// ─── 모바일 푸터 아코디언 (링크 그룹 접기) — 데스크톱은 원래 그리드 유지 ───
+(function(){
+  const grid = document.querySelector('.foot-grid');
+  if(!grid) return;
+  const mq = matchMedia('(max-width:600px)');
+  const cols = Array.from(grid.children).filter(col => col.querySelector('h6'));
+  cols.forEach(col=>{
+    const h = col.querySelector('h6');
+    const links = Array.from(col.children).filter(c => c !== h);
+    const setOpen = (o)=>{ links.forEach(l=>l.style.display = o ? '' : 'none'); h.setAttribute('aria-expanded', o ? 'true' : 'false'); h.classList.toggle('open', o); };
+    const toggle = ()=> setOpen(h.getAttribute('aria-expanded') !== 'true');
+    if(!h.dataset.accBound){
+      h.dataset.accBound = '1';
+      h.addEventListener('click', ()=>{ if(mq.matches) toggle(); });
+      h.addEventListener('keydown', e=>{ if(mq.matches && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); toggle(); } });
+    }
+    col._accApply = (mobile)=>{
+      if(mobile){
+        h.classList.add('foot-toggle'); h.setAttribute('role','button'); h.setAttribute('tabindex','0');
+        setOpen(false);
+      } else {
+        h.classList.remove('foot-toggle','open'); h.removeAttribute('role'); h.removeAttribute('tabindex'); h.removeAttribute('aria-expanded');
+        links.forEach(l=>l.style.display='');
+      }
+    };
+  });
+  const apply = ()=> cols.forEach(col=>col._accApply(mq.matches));
+  apply();
+  mq.addEventListener('change', apply);
 })();
 
 </script>
