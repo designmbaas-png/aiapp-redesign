@@ -428,40 +428,51 @@ button{font-family:var(--font);}
   .faq-head{position:static;}
 }
 @media(max-width:620px){
-  /* B-1. 본문 가독성: 한글 어절 단위 줄바꿈 + 줄 균형 */
-  .hero .lead,.sub,.h2,.cmp-title,.pname,.pfor,.feat li,.cmp-notes li,.ent p{word-break:keep-all;overflow-wrap:break-word;text-wrap:pretty;}
+  /* 본문 가독성: 한글 어절 단위 줄바꿈 + 줄 균형 */
+  .hero .lead,.sub,.h2,.cmp-title,.pname,.pfor,.cmp-notes li,.ent p{word-break:keep-all;overflow-wrap:break-word;text-wrap:pretty;}
   .hero .lead,.sub{line-height:1.65;}
 
-  /* B-2. 요금제 카드: 세로 나열 → 가로 스크롤 캐러셀(스크롤 최소화, 스와이프로 플랜 비교) */
-  .cards{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:14px;padding:6px 4px 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;
-    -webkit-mask-image:linear-gradient(90deg,#000 93%,transparent);mask-image:linear-gradient(90deg,#000 93%,transparent);}
-  .cards::-webkit-scrollbar{display:none;}
-  .pcard{flex:0 0 86%;scroll-snap-align:center;padding:26px 22px 24px;border-radius:18px;}
-  .pcard.featured{order:-1;grid-column:auto;}       /* 비즈니스(추천) 먼저, span 리셋 */
-  .pname{font-size:19px;}
-  .pfor{font-size:13px;line-height:1.5;min-height:0;margin-top:8px;}
-  .price-box{min-height:0;margin-top:18px;}
-  .badge-top{font-size:12px;padding:5px 15px;top:-13px;}
-  .was{font-size:12.5px;gap:8px;} .off{font-size:11px;padding:3px 8px;}
-  .price .num{font-size:34px;} .price .num.sm{font-size:22px;} .price .unit{font-size:13px;}
-  .pay-note{font-size:12.5px;margin-top:8px;}
-  .pcta{margin-top:20px;} .pcta .btn{padding:14px 18px;font-size:15px;}
-  .pdivider{margin:20px 0 16px;}
-  .feat{gap:11px;} .feat li{font-size:13.5px;line-height:1.5;}
+  /* B-1. 요금제 카드: 슬라이드 제거 → 5개 플랜을 한 화면에 압축 리스트로.
+     카드당 [플랜명·가격·핵심혜택1줄·CTA]만, 상세 기능은 아래 비교표로 분리, 높이 균등 */
+  .cards{display:flex;flex-direction:column;gap:10px;padding:0;overflow:visible;-webkit-mask-image:none;mask-image:none;}
+  .pcard{flex:none;width:auto;display:grid;grid-template-columns:1fr auto;column-gap:14px;align-items:center;
+    padding:14px 16px;border-radius:14px;min-height:76px;
+    box-shadow:0 1px 2px rgba(14,22,38,.03),0 8px 20px -16px rgba(14,22,38,.1);}
+  .pcard.featured{order:0;}
+  .badge-top,.was,.pay-note,.pdivider,.feat{display:none;}   /* 상세 기능은 비교표로 이동 */
+  .pname{grid-column:1;grid-row:1;font-size:15px;margin:0;letter-spacing:-.02em;}
+  .price-box{grid-column:1;grid-row:2;min-height:0;margin:3px 0 0;}
+  .price{margin:0;} .price .num{font-size:19px;} .price .num.sm{font-size:15px;} .price .unit{font-size:12px;}
+  .off{font-size:10.5px;padding:2px 6px;}
+  .pfor{grid-column:1;grid-row:3;font-size:12px;line-height:1.35;min-height:0;margin:3px 0 0;color:var(--muted);}
+  .pcta{grid-column:2;grid-row:1 / span 3;align-self:center;margin:0;}
+  .pcta .btn{min-height:44px;padding:0 16px;font-size:14px;white-space:nowrap;}
 
-  /* B-3. 전체 기능 비교: cmp-wrap의 overflow:hidden이 min-width 표를 잘라 스크롤 불가였음
-     → cmp-wrap 자체를 가로 스크롤 컨테이너로 전환 + 첫 열 sticky + 우측 페이드 힌트 */
-  .cmp-scroll{position:relative;}
-  .cmp-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;}
-  .cmp{min-width:620px;}
-  .cmp thead th{position:static;}
-  .cmp th:first-child,.cmp td:first-child{position:sticky;left:0;z-index:2;background:#fff;min-width:120px;box-shadow:1px 0 0 var(--line);}
-  .cmp thead th:first-child{z-index:3;}
-  .cmp tbody tr.cat td{position:sticky;left:0;z-index:1;}
-  .cmp-scroll::after{content:"";position:absolute;top:0;right:0;bottom:0;width:36px;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0),#fff 82%);z-index:4;transition:opacity .2s;}
-  .cmp-scroll.at-end::after{opacity:0;}
+  /* B-2. 전체 기능 비교: 가로 스크롤 제거 → 화면 폭에 맞춘 고정 레이아웃(체크/대시 아이콘 매트릭스).
+     플랜 헤더 sticky, 값 셀은 12px 유지·줄바꿈, 핵심 기능만 노출 + '전체 보기' 확장 */
+  .cmp-wrap{overflow:visible;}
+  .cmp-scroll::after{display:none;}
+  .cmp{min-width:0;width:100%;table-layout:fixed;}
+  .cmp thead th{position:sticky;top:64px;z-index:5;padding:10px 2px;background:#fff;vertical-align:middle;}
+  .cmp thead th.hl{background:#F0F4FE;}
+  .cmp thead .pn{font-size:12px;line-height:1.15;word-break:break-all;letter-spacing:-.03em;}
+  .cmp thead .pp{display:none;}
+  .cmp .hl-badge{font-size:8px;padding:2px 5px;top:1px;}
+  .cmp th,.cmp td{padding:9px 2px;font-size:12px;}
+  .cmp th:first-child,.cmp td:first-child{width:30%;text-align:left;padding-left:8px;word-break:keep-all;line-height:1.25;}
+  .cmp td:not(:first-child),.cmp th:not(:first-child){width:14%;}
+  .cmp .val{font-size:12px;line-height:1.2;word-break:keep-all;}
+  .cmp .soon{font-size:12px;line-height:1.2;}
+  .cmp .info{display:none;}                 /* 툴팁 아이콘 숨김(폭 확보, 설명은 하단 주석) */
+  .cmp .ck svg{width:13px;height:13px;}
+  .cmp .cat td{font-size:12px;padding:7px 8px;}
+  .cmp tbody tr.extra{display:none;}
+  .cmp.show-all tbody tr.extra{display:table-row;}
+  .cmp-more{display:inline-flex;align-items:center;justify-content:center;gap:6px;margin:14px auto 0;min-height:44px;padding:0 18px;
+    background:rgba(43,92,230,.08);border:1px solid rgba(43,92,230,.28);border-radius:999px;color:var(--accent);
+    font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;}
 
-  /* B-4. 엔터프라이즈 배너: 상세 기능 접기(아코디언) — 핵심(제목·설명·CTA)만 노출 */
+  /* B-4(유지). 엔터프라이즈 상세 기능 아코디언 */
   .ent{padding:36px 22px;}
   .ent-feats{grid-template-columns:1fr 1fr;gap:8px 16px;overflow:hidden;max-height:0;opacity:0;margin-top:0;transition:max-height .28s ease,opacity .2s ease,margin-top .28s ease;}
   .ent-feats.open{max-height:340px;opacity:1;margin-top:14px;}
@@ -470,12 +481,7 @@ button{font-family:var(--font);}
   .ent-feats-toggle[aria-expanded="true"]::after{transform:rotate(180deg);}
   .ent-cta .btn{min-height:48px;}
 }
-@media(min-width:621px){ .ent-feats-toggle{display:none;} }
-@media(max-width:400px){
-  .pcard{flex:0 0 90%;padding:24px 18px 22px;}
-  .price .num{font-size:31px;}
-  .ent-feats.open{grid-template-columns:1fr;}
-}
+@media(min-width:621px){ .ent-feats-toggle,.cmp-more{display:none;} }
 </style>
 </head>
 <body>
@@ -567,7 +573,7 @@ button{font-family:var(--font);}
       </div>
     </div>
 
-    <div class="cards reveal" tabindex="0" role="group" aria-label="요금제 플랜 목록 — 모바일에서는 좌우로 스와이프해 비교하세요">
+    <div class="cards reveal" role="list" aria-label="요금제 플랜 목록">
 
       <!-- 무료 -->
       <article class="pcard">
@@ -683,8 +689,8 @@ button{font-family:var(--font);}
     <h2 class="cmp-title reveal">전체 기능 비교</h2>
 
     <div class="reveal cmp-scroll">
-      <div class="cmp-wrap" tabindex="0" role="region" aria-label="요금제 기능 비교표 — 모바일에서는 좌우로 스크롤하세요">
-        <table class="cmp">
+      <div class="cmp-wrap">
+        <table class="cmp" id="cmpTable">
           <thead>
             <tr>
               <th></th>
@@ -704,8 +710,8 @@ button{font-family:var(--font);}
             <tr class="cat"><td colspan="6">배포</td></tr>
             <tr><td>광고 제거</td><td><span class="dash">–</span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td class="hl"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td></tr>
             <tr><td>Web 출시<span class="info" tabindex="0">?<span class="tt">완성된 웹사이트를 실제 주소(○○○.aiapp.link)로 바로 배포합니다. 호스팅과 배포는 자동으로 처리됩니다.</span></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td class="hl"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td></tr>
-            <tr><td>App 출시<span class="info" tabindex="0">?<span class="tt">완성한 서비스를 앱(App)으로 출시하는 기능은 현재 준비 중이며, 오픈 후 순차 제공될 예정입니다.</span></span></td><td><span class="dash">–</span></td><td><span class="dash">–</span></td><td class="soon">기능 출시 예정</td><td class="hl"><span class="dash">–</span></td><td><span class="dash">–</span></td></tr>
-            <tr><td>자체 도메인<span class="info" tabindex="0">?<span class="tt">자체 도메인은 비즈니스 플랜 연간 결제 시 1개 대여로 제공됩니다.</span></span></td><td><span class="dash">–</span></td><td><span class="dash">–</span></td><td><span class="dash">–</span></td><td class="hl val">1개 대여</td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td></tr>
+            <tr class="extra"><td>App 출시<span class="info" tabindex="0">?<span class="tt">완성한 서비스를 앱(App)으로 출시하는 기능은 현재 준비 중이며, 오픈 후 순차 제공될 예정입니다.</span></span></td><td><span class="dash">–</span></td><td><span class="dash">–</span></td><td class="soon">기능 출시 예정</td><td class="hl"><span class="dash">–</span></td><td><span class="dash">–</span></td></tr>
+            <tr class="extra"><td>자체 도메인<span class="info" tabindex="0">?<span class="tt">자체 도메인은 비즈니스 플랜 연간 결제 시 1개 대여로 제공됩니다.</span></span></td><td><span class="dash">–</span></td><td><span class="dash">–</span></td><td><span class="dash">–</span></td><td class="hl val">1개 대여</td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td></tr>
 
             <!-- 개발 기능 -->
             <tr class="cat"><td colspan="6">개발 기능</td></tr>
@@ -714,12 +720,13 @@ button{font-family:var(--font);}
 
             <!-- 리소스 -->
             <tr class="cat"><td colspan="6">리소스</td></tr>
-            <tr><td>템플릿 제공</td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td class="hl"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td></tr>
-            <tr><td>크레딧<span class="info" tabindex="0">?<span class="tt">API 사용량·호스팅·클라우드(AWS 등)·AI 수정에 사용되는 단위입니다. 결제일 기준 30일마다 지급되며, 소진 시 추가 구매가 가능합니다.</span></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td class="hl val">추가 제공</td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td></tr>
+            <tr class="extra"><td>템플릿 제공</td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td class="hl"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td></tr>
+            <tr class="extra"><td>크레딧<span class="info" tabindex="0">?<span class="tt">API 사용량·호스팅·클라우드(AWS 등)·AI 수정에 사용되는 단위입니다. 결제일 기준 30일마다 지급되며, 소진 시 추가 구매가 가능합니다.</span></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td><td class="hl val">추가 제공</td><td><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td></tr>
           </tbody>
         </table>
       </div>
     </div>
+    <button class="cmp-more" type="button" aria-expanded="false" aria-controls="cmpTable">전체 보기</button>
     <ul class="cmp-notes reveal">
       <li>표시된 금액은 출시 기념 할인이 적용된 가격으로, 프로모션 종료 시 정가로 변경될 수 있습니다.</li>
       <li>연간 결제 시 20% 할인이 적용됩니다.</li>
@@ -1110,6 +1117,18 @@ function closeNav(){ const cb=navCb(); if(cb){ cb.checked=false; cb.dispatchEven
   scroller.addEventListener('scroll', upd, {passive:true});
   window.addEventListener('resize', upd, {passive:true});
   upd();
+})();
+
+// ─── 요금제: 기능 비교표 '전체 보기' 확장(모바일) ───
+(function(){
+  const btn = document.querySelector('.cmp-more');
+  const table = document.getElementById('cmpTable');
+  if(!btn || !table) return;
+  btn.addEventListener('click', ()=>{
+    const open = table.classList.toggle('show-all');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.textContent = open ? '접기' : '전체 보기';
+  });
 })();
 
 </script>

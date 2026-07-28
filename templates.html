@@ -419,10 +419,21 @@ button{font-family:var(--font);}
 .rel h2{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:20px;}
 @media(max-width:900px){.d-cols{grid-template-columns:1fr;}.d-head{flex-direction:column;}}
 
-/* A-1. 모바일 본문 가독성: 한글 어절 단위 줄바꿈 + 줄 균형 (데스크톱 무영향) */
+/* A-1. 모바일 본문 가독성 + 진입 시 템플릿 그리드 즉시 노출 (데스크톱 무영향) */
 @media(max-width:600px){
   .hero .lead,.sub,.h2,.name,.desc,.catline,.cardtext{word-break:keep-all;overflow-wrap:break-word;text-wrap:pretty;}
   .hero .lead,.sub{line-height:1.65;}
+  /* 히어로가 뷰포트를 점유해 그리드가 접힘 아래로 밀리던 문제 → 히어로 압축 */
+  .hero{padding:22px 0 12px;}
+  .hero .badge-line{padding:5px 12px;font-size:10px;}
+  .hero h1{font-size:25px;margin-top:10px;line-height:1.26;}
+  .hero .lead{font-size:13.5px;margin-top:8px;}
+  .grid{gap:16px 14px;}
+  /* 그리드는 JS로 즉시 렌더되지만, 렌더 전 자리를 잡아 레이아웃 시프트(CLS) 방지.
+     썸네일은 .shotwrap{aspect-ratio:16/10}로 이미 높이가 예약됨 */
+  #grid:empty{min-height:70vh;background:
+    repeating-linear-gradient(0deg,transparent 0 8px,transparent 8px),
+    linear-gradient(var(--paper),var(--paper));}
 }
 </style>
 </head>
@@ -930,6 +941,18 @@ function closeNav(){ const cb=navCb(); if(cb){ cb.checked=false; cb.dispatchEven
   scroller.addEventListener('scroll', upd, {passive:true});
   window.addEventListener('resize', upd, {passive:true});
   upd();
+})();
+
+// ─── 요금제: 기능 비교표 '전체 보기' 확장(모바일) ───
+(function(){
+  const btn = document.querySelector('.cmp-more');
+  const table = document.getElementById('cmpTable');
+  if(!btn || !table) return;
+  btn.addEventListener('click', ()=>{
+    const open = table.classList.toggle('show-all');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.textContent = open ? '접기' : '전체 보기';
+  });
 })();
 
 </script>
