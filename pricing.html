@@ -456,7 +456,7 @@ button{font-family:var(--font);}
   /* 2. 헤더 셀 전체(추천 컬럼 th.hl 포함)를 동일 특이도로 sticky 지정 —
      기존 '.cmp thead th.hl{position:relative}'가 특이도로 이겨 비즈니스 칸만 sticky가 안 돼
      헤더 행이 어긋나며 '추천 비즈니스'가 아래 행으로 겹쳐 보이던 문제 해결 */
-  .cmp thead th,.cmp thead th.hl{position:sticky;top:64px;z-index:5;padding:12px 3px 10px;background:#fff;vertical-align:top;}
+  .cmp thead th,.cmp thead th.hl{position:sticky;top:64px;z-index:5;padding:12px 3px;background:#fff;vertical-align:bottom;}
   .cmp thead th.hl{background:#F0F4FE;}
   .cmp thead .pn{font-size:12px;line-height:1.15;word-break:break-all;letter-spacing:-.03em;}
   .cmp thead .pp{display:none;}
