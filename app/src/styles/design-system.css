@@ -1,0 +1,251 @@
+/* ═══════════════════════════════════════════════════════════════
+   AiApp Design System  —  Source of Truth: 시안2_홈
+   모든 페이지가 공유하는 토큰 · 베이스 · 공통 컴포넌트
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── 1. Design Tokens ─── */
+:root{
+  --paper:#F7F9FC;
+  --surface:#FFFFFF;
+  --ink:#0E1626;
+  --muted:#5B6577;
+  --faint:#8B94A6;
+  --accent:#2B5CE6;
+  --accent-deep:#1E43B8;
+  --mint:#5CDBB4;
+  --navy:#0A1836;
+  --navy-2:#12224A;
+  --line:#E4E9F2;
+  --radius:16px;
+  --font:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+}
+
+/* ─── 2. Base ─── */
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--ink);font-family:var(--font);line-height:1.6;-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px;}
+.eyebrow{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);}
+.h2{font-size:clamp(26px,3.4vw,38px);font-weight:800;letter-spacing:-.03em;line-height:1.3;}
+.sub{font-size:15.5px;color:var(--muted);margin-top:14px;max-width:560px;}
+.center{text-align:center;}
+.center .sub{margin-left:auto;margin-right:auto;}
+.section{padding:110px 0;}
+
+/* ─── 3. Button ─── */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:12px;font-size:14.5px;font-weight:700;border:1.5px solid transparent;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,background .18s ease;font-family:var(--font);position:relative;overflow:hidden;}
+.btn::after{content:"";position:absolute;top:0;left:-120%;width:60%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);transition:left .5s ease;}
+.btn:hover::after{left:140%;}
+.btn:focus-visible{outline:3px solid rgba(43,92,230,.4);outline-offset:2px;}
+.btn-primary{background:var(--ink);color:#fff;box-shadow:0 6px 16px rgba(14,22,38,.18);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(14,22,38,.22);}
+.btn-accent{background:var(--accent);color:#fff;box-shadow:0 6px 18px rgba(43,92,230,.32);}
+.btn-accent:hover{background:var(--accent-deep);transform:translateY(-2px);}
+.btn-ghost{background:#fff;border-color:var(--line);color:var(--ink);}
+.btn-ghost:hover{border-color:var(--ink);}
+
+/* ─── 4. Chip / Tag ─── */
+.chip{font-size:12.5px;font-weight:600;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 15px;cursor:pointer;transition:all .15s;}
+.chip:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px);}
+.chip.on{background:rgba(43,92,230,.08);border-color:rgba(43,92,230,.35);color:var(--accent);}
+
+/* ─── 5. Scroll Reveal / Stagger ─── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.16,.84,.44,1),transform .7s cubic-bezier(.16,.84,.44,1);will-change:opacity,transform;}
+.reveal.on{opacity:1;transform:none;}
+.reveal.from-left{transform:translateX(-32px);}
+.reveal.from-right{transform:translateX(32px);}
+.reveal.zoom{transform:scale(.94);}
+.reveal.on.from-left,.reveal.on.from-right,.reveal.on.zoom{transform:none;}
+.stagger.on > *{animation:staggerIn .6s cubic-bezier(.16,.84,.44,1) backwards;}
+.stagger.on > *:nth-child(1){animation-delay:.02s;}
+.stagger.on > *:nth-child(2){animation-delay:.10s;}
+.stagger.on > *:nth-child(3){animation-delay:.18s;}
+.stagger.on > *:nth-child(4){animation-delay:.26s;}
+.stagger.on > *:nth-child(5){animation-delay:.34s;}
+@keyframes staggerIn{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:none;}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(92,219,180,.25);}50%{box-shadow:0 0 0 6px rgba(92,219,180,.08);}}
+@media(prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none;}
+  *{animation:none!important;transition:none!important;}
+}
+
+/* ─── 6. 상단 프로모 배너 ─── */
+.topbanner{position:relative;display:block;background:linear-gradient(90deg,#6B3AF2 0%,#5B4BF5 40%,#2B5CE6 100%);color:#fff;text-decoration:none;cursor:pointer;}
+.topbanner-in{max-width:1160px;margin:0 auto;padding:7px 52px;text-align:center;font-size:13px;font-weight:600;letter-spacing:-.01em;line-height:1.4;}
+.topbanner b{font-weight:800;}
+.topbanner .tb-link{font-weight:800;text-decoration:underline;text-underline-offset:3px;margin-left:6px;white-space:nowrap;}
+.topbanner .tb-arrow{display:inline-block;margin-left:4px;transition:transform .2s;}
+.topbanner:hover .tb-arrow{transform:translateX(3px);}
+.topbanner-x{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:24px;height:24px;border:none;border-radius:8px;background:transparent;color:rgba(255,255,255,.85);font-size:16px;line-height:1;cursor:pointer;}
+.topbanner-x:hover{background:rgba(255,255,255,.15);color:#fff;}
+@media(max-width:760px){.topbanner-in{font-size:12px;padding:10px 44px;}}
+
+/* ─── 7. GNB (Header Navigation) ─── */
+.gnb{position:sticky;top:0;z-index:50;background:rgba(247,249,252,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+.gnb-in{position:relative;max-width:1360px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;gap:24px;}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.02em;flex:none;}
+.logo-img{height:30px;width:auto;flex:none;display:block;object-fit:contain;}
+.logo-mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--mint));display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:800;}
+.gnb nav{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;gap:24px;font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.01em;white-space:nowrap;}
+.gnb nav a:hover{color:var(--accent);}
+.gnb nav a.on{color:var(--accent);}
+.gnb .util{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:13.5px;font-weight:500;}
+.gnb .util .lang{color:var(--muted);font-family:var(--mono);font-size:11.5px;font-weight:700;cursor:pointer;border:none;background:transparent;padding:6px 8px;border-radius:8px;}
+.gnb .util .lang:hover{background:rgba(43,92,230,.07);color:var(--accent);}
+.gnb-badge{display:inline-flex;align-items:center;gap:7px;border:1px solid #E3E7EF;border-radius:999px;padding:4px 11px 4px 9px;background:#F4F6FA;white-space:nowrap;text-decoration:none;transition:border-color .2s,background .2s;}
+.gnb-badge:hover{border-color:rgba(43,92,230,.4);background:#EFF3FB;}
+.gnb-badge .mc-logo{font-size:8px;font-weight:900;color:#1E4FD8;line-height:1.05;letter-spacing:-.03em;text-align:left;}
+.gnb-badge .mc-flag{display:block;flex:none;width:16px;height:12px;}
+.gnb-badge .mc-tx{font-size:11px;font-weight:800;color:var(--ink);letter-spacing:-.01em;}
+.gnb-badge .check{color:var(--accent);font-weight:800;}
+.gnb-badge .badge-full{display:inline;}
+.gnb-badge .badge-short{display:none;}
+/* nav는 컨테이너(1360px) 기준 항상 절대 중앙 정렬(Home과 동일)로 유지.
+   폭이 좁아질수록 우측 util 요소를 순차적으로 접어 중앙 nav와 겹치지 않게 한다. */
+@media(max-width:1280px){.gnb nav{gap:20px;font-size:14px;}}
+@media(max-width:1230px){
+  .gnb-badge .badge-full{display:none;}
+  .gnb-badge .badge-short{display:inline;}
+}
+@media(max-width:1160px){.gnb .util .lang{display:none;}}
+/* Tablet/Mobile: '모두의 창업' CTA를 원형 아이콘 버튼(FAB형)으로 — Home 깃발 아이콘·배지 컬러 그대로 재사용 */
+@media(max-width:1024px){
+  .gnb-badge{width:34px;height:34px;padding:0;border-radius:50%;justify-content:center;gap:0;flex:none;}
+  .gnb-badge .mc-logo,.gnb-badge .mc-tx{display:none;}
+  .gnb-badge .mc-flag{display:block;width:15px;height:11px;}
+}
+.gnb .btn{padding:9px 18px;font-size:13.5px;}
+.gnb-my{gap:7px!important;padding-left:6px!important;}
+.gnb-my .my-av{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.25);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}
+
+/* ─── 7b. Mobile Nav : Hamburger + Drawer (CSS-only 체크박스 · JS 없이 동작) ─── */
+.nav-cb{position:fixed;top:0;left:0;width:1px;height:1px;margin:0;opacity:0;pointer-events:none;}
+.gnb-toggle{display:none;width:42px;height:42px;flex:none;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);cursor:pointer;transition:border-color .2s,color .2s,background .2s;-webkit-user-select:none;user-select:none;}
+.gnb-toggle:hover{border-color:var(--accent);color:var(--accent);background:#F7F9FF;}
+.gnb-toggle:focus-visible,.nav-drawer-close:focus-visible{outline:3px solid rgba(43,92,230,.4);outline-offset:2px;}
+.gnb-toggle svg{width:22px;height:22px;pointer-events:none;}
+.nav-overlay{position:fixed;inset:0;z-index:60;background:rgba(10,24,54,.42);backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:opacity .28s ease,visibility .28s ease;cursor:pointer;border:0;}
+.nav-overlay.on,.nav-cb:checked ~ .nav-overlay{opacity:1;visibility:visible;}
+.nav-drawer{position:fixed;top:0;right:0;z-index:61;display:flex;flex-direction:column;width:min(84vw,340px);height:100%;background:#fff;box-shadow:-10px 0 44px -14px rgba(10,24,54,.32);transform:translateX(100%);transition:transform .3s cubic-bezier(.16,.84,.44,1);padding:14px 18px 24px;overflow-y:auto;overscroll-behavior:contain;}
+.nav-drawer.on,.nav-cb:checked ~ .nav-drawer{transform:none;}
+.nav-drawer-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--line);}
+.nav-drawer-close{width:42px;height:42px;flex:none;border:none;border-radius:11px;background:var(--paper);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;}
+.nav-drawer-close:hover{background:var(--line);color:var(--ink);}
+.nav-drawer-close svg{width:20px;height:20px;}
+.nav-drawer-links{display:flex;flex-direction:column;gap:2px;padding:14px 0;}
+.nav-drawer-links a{display:flex;align-items:center;min-height:52px;padding:12px 14px;border-radius:12px;font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.01em;transition:background .15s,color .15s;}
+.nav-drawer-links a:hover{background:rgba(43,92,230,.06);color:var(--accent);}
+.nav-drawer-links a.on{background:rgba(43,92,230,.09);color:var(--accent);}
+.nav-drawer-foot{margin-top:auto;display:flex;flex-direction:column;gap:12px;padding-top:16px;border-top:1px solid var(--line);}
+.nav-drawer-auth{display:flex;flex-direction:column;gap:10px;}
+.nav-drawer-auth .btn{width:100%;justify-content:center;height:48px;font-size:15px;}
+.nav-drawer-badge{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;border:1px solid #E3E7EF;border-radius:999px;padding:6px 14px 6px 11px;background:#F4F6FA;}
+.nav-drawer-badge .mc-logo{font-size:8px;font-weight:900;color:#1E4FD8;line-height:1.05;letter-spacing:-.03em;text-align:left;}
+.nav-drawer-badge .mc-flag{display:block;flex:none;width:18px;height:13px;}
+.nav-drawer-badge .mc-tx{font-size:12px;font-weight:800;color:var(--ink);letter-spacing:-.01em;}
+body.nav-open{overflow:hidden;}
+/* 데스크톱/태블릿(≥881): 드로어·오버레이 완전 비활성. 모바일(≤880)만 햄버거 사용 */
+@media(min-width:881px){.nav-drawer,.nav-overlay{display:none!important;}}
+@media(max-width:880px){
+  .gnb-in{gap:12px;height:64px;}
+  .gnb nav{display:none;}                 /* 상단 바 메뉴 숨김 → 드로어(햄버거)로 이동 */
+  .gnb .util .lang{display:none;}
+  .gnb-toggle{display:inline-flex;}       /* 햄버거 버튼 노출 */
+  /* '모두의 창업' 원형 아이콘 + '무료로 만들기' CTA는 바에 유지 */
+  .gnb .util{display:flex;flex:none;align-items:center;gap:10px;margin-left:auto;}
+  .gnb .btn{padding:8px 14px;font-size:13px;}
+}
+@media(max-width:560px){
+  /* 아주 좁은 화면: 보조 텍스트 링크는 감추고 핵심 CTA만 유지 */
+  .gnb .util #authLoggedOut > a:not(.btn),.gnb .util #authLoggedIn > a:not(.btn){display:none;}
+}
+
+/* ─── 8. Footer ─── */
+footer{border-top:1px solid var(--line);background:#fff;padding:64px 0 32px;}
+.foot-grid{display:grid;grid-template-columns:1.7fr repeat(5,1fr);gap:24px;}
+.foot-grid h6{font-size:13px;font-weight:800;margin-bottom:14px;}
+.foot-grid a{display:block;font-size:12.5px;color:var(--muted);padding:4px 0;}
+.foot-grid a:hover{color:var(--accent);}
+.foot-desc{font-size:13px;color:var(--muted);margin-top:14px;line-height:1.7;}
+.biz{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-size:11px;color:var(--faint);line-height:1.8;text-align:center;}.biz-line{margin:0;}.biz-line span:not(:last-child)::after{content:" · ";white-space:pre;}.biz-copy{margin:8px 0 0;}
+.biz-check{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;color:var(--muted);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:3px 9px;margin-left:8px;vertical-align:middle;transition:border-color .15s,color .15s;}
+.biz-check:hover{border-color:var(--accent);color:var(--accent);}
+@media(max-width:920px){.foot-grid{grid-template-columns:1fr 1fr;}}
+
+/* ─── 9. Login Modal ─── */
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(10,24,54,.55);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:24px;opacity:0;transition:opacity .25s ease;}
+.modal-overlay.on{display:flex;opacity:1;}
+.modal-panel{position:relative;width:100%;max-width:400px;background:#fff;border-radius:22px;padding:38px 34px 30px;box-shadow:0 40px 90px -30px rgba(10,24,54,.5);transform:translateY(16px) scale(.98);transition:transform .3s cubic-bezier(.16,.84,.44,1);max-height:92vh;overflow-y:auto;}
+.modal-overlay.on .modal-panel{transform:none;}
+.modal-close{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:10px;border:none;background:var(--paper);color:var(--muted);font-size:14px;cursor:pointer;transition:background .15s;}
+.modal-close:hover{background:var(--line);}
+.modal-brand{display:flex;align-items:center;justify-content:center;gap:9px;font-weight:800;font-size:17px;letter-spacing:-.02em;}
+.modal-title{font-size:21px;font-weight:800;text-align:center;letter-spacing:-.03em;margin-top:18px;}
+.modal-sub{font-size:13px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.6;}
+.social-list{display:flex;justify-content:center;gap:18px;margin-top:0;}
+.social-btn{display:flex;flex-direction:column;align-items:center;gap:8px;background:none;border:none;cursor:pointer;font-family:var(--font);padding:0;transition:transform .12s;}
+.social-btn .s-logo{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid transparent;transition:filter .15s,box-shadow .15s,transform .15s;box-shadow:0 2px 8px rgba(14,22,38,.06);}
+.social-btn:hover .s-logo{transform:translateY(-3px);box-shadow:0 8px 18px rgba(14,22,38,.14);}
+.social-btn:active{transform:scale(.96);}
+.social-btn .s-label{font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:-.01em;}
+.social-btn.kakao .s-logo{background:#FEE500;}
+.social-btn.naver .s-logo{background:#03C75A;}
+.social-btn.google .s-logo{background:#fff;border-color:#DADCE0;}
+.social-btn.apple .s-logo{background:#000;}
+.modal-divider{display:flex;align-items:center;gap:12px;margin:22px 0 18px;color:var(--faint);font-size:11.5px;}
+.modal-divider::before,.modal-divider::after{content:"";flex:1;height:1px;background:var(--line);}
+.email-form{display:grid;gap:10px;margin-top:26px;}
+.modal-input{width:100%;height:46px;padding:0 14px;border:1.5px solid var(--line);border-radius:11px;font-size:14px;font-family:var(--font);transition:border-color .15s;}
+.modal-input:focus{outline:none;border-color:var(--accent);}
+.modal-submit{width:100%;height:46px;justify-content:center;margin-top:2px;}
+.modal-foot{text-align:center;font-size:13px;color:var(--muted);margin-top:20px;}
+.modal-foot a{color:var(--accent);font-weight:700;}
+.modal-terms{text-align:center;font-size:11px;color:var(--faint);margin-top:14px;line-height:1.6;}
+.modal-terms a{color:var(--muted);text-decoration:underline;}
+@media(prefers-reduced-motion:reduce){.modal-overlay,.modal-panel{transition:none;}}
+@media(max-width:440px){.modal-panel{padding:32px 22px 24px;}}
+
+/* ─── 10. Final CTA Card (모두의 페이지 하단 공통) ─── */
+.final-card{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:80px 40px;text-align:center;box-shadow:0 24px 60px -30px rgba(43,92,230,.3);}
+.final-card::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(480px 240px at 20% 0%,rgba(43,92,230,.1),transparent 70%),
+  radial-gradient(480px 240px at 80% 100%,rgba(92,219,180,.12),transparent 70%);pointer-events:none;}
+.final-card>*{position:relative;}
+.final-card h2{font-size:clamp(26px,3.6vw,40px);font-weight:800;letter-spacing:-.035em;line-height:1.28;}
+.final-btns{display:flex;gap:12px;justify-content:center;margin-top:30px;flex-wrap:wrap;}
+.mini-prompt{max-width:460px;margin:28px auto 0;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:13px 18px;font-size:13px;color:var(--faint);text-align:left;display:flex;justify-content:space-between;align-items:center;}
+.mini-prompt span:last-child{color:var(--accent);font-weight:700;}
+
+/* ─── 11. Common Responsive ─── */
+@media(max-width:768px){
+  .wrap{padding:0 20px;}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:20px 24px;}
+  .final-card{padding:56px 26px;}
+  .final-btns{flex-direction:column;align-items:stretch;}
+  .final-btns .btn{width:100%;justify-content:center;height:50px;}
+}
+@media(max-width:600px){
+  .section{padding:72px 0;}
+  .wrap{padding:0 18px;}
+  /* 푸터: 링크 그룹을 아코디언으로 접어 길이 축소(토글·aria는 site.js). JS 미실행 시 전체 표시(폴백) */
+  .foot-grid{grid-template-columns:1fr;gap:0;}
+  .foot-grid > :first-child{padding-bottom:10px;}
+  .foot-grid > div:not(:first-child){border-top:1px solid var(--line);}
+  .foot-toggle{display:flex;align-items:center;justify-content:space-between;min-height:48px;margin-bottom:0;cursor:pointer;-webkit-user-select:none;user-select:none;}
+  .foot-toggle::after{content:"+";font-size:20px;font-weight:400;line-height:1;color:var(--muted);}
+  .foot-toggle.open::after{content:"\2212";}
+  .foot-toggle:focus-visible{outline:3px solid rgba(43,92,230,.4);outline-offset:2px;border-radius:6px;}
+  .foot-grid > div > a{padding:9px 0;}
+  .biz{text-align:left;line-height:1.7;}
+  .biz-line{margin-bottom:12px;}
+  .biz-line span{display:block;}
+  .biz-line span:not(:last-child)::after{content:none;}
+  .biz-copy{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);text-align:center;}
+  .btn{padding:12px 20px;}
+  .final-card{padding:44px 22px;border-radius:20px;}
+  .mini-prompt{flex-direction:row;}
+}
+

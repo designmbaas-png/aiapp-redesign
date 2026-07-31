@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AiApp Product Demo</title>
+<!-- ============================================================
+     AiApp 제품 영상 데모 — 완전 자동 시퀀스 (컨트롤 없음, ~46초)
+     R 키 = 처음부터 다시.
+     연출 핵심: 링크 입력 후, 풀스크린이던 옛 사이트가
+     AiApp 스튜디오의 "미리보기 패널 안으로" 도킹되고
+     그 안에서 스캔 → 와이프 전환 → 자동 스크롤이 일어남.
+     마지막엔 데이터베이스 탭으로 전환되어 견적 인박스까지.
+     ============================================================ -->
+<style>
+  :root {
+    --ink: #1E2635;
+    --muted: #7B8598;
+    --line: #E3E8F1;
+    --accent: #3B6EF5;
+    --accent-deep: #2A56D8;
+    --accent-soft: #EAF0FE;
+    --ok: #16A374;
+    --ok-soft: #E5F6EF;
+    --orange: #FF6B1A;
+    --console: #1E2531;
+    --mono: ui-monospace, Consolas, monospace;
+    --sans: Pretendard, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+    --feed-w: 400px;      /* 스튜디오 좌측 채팅 폭 */
+    --chrome-h: 92px;     /* 탭(48) + 주소바(44) */
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; font-family: var(--sans); background: #F2F5FB; overflow: hidden; }
+  iframe { border: none; width: 100%; height: 100%; display: block; position: absolute; inset: 0; background: #fff; }
+
+  /* ══════ 사이트 홀더: 풀스크린 → 미리보기 패널로 도킹 ══════ */
+  #holder {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    overflow: hidden;
+    transition: opacity .5s,
+      top .9s cubic-bezier(.6,0,.2,1), left .9s cubic-bezier(.6,0,.2,1),
+      right .9s cubic-bezier(.6,0,.2,1), bottom .9s cubic-bezier(.6,0,.2,1);
+  }
+  #holder.docked {
+    top: var(--chrome-h);
+    left: calc(var(--feed-w) + 1px);
+    right: 0;
+    bottom: 0;
+  }
+  #holder.gone { opacity: 0; pointer-events: none; }
+  /* 데모 중 사용자 스크롤·클릭 차단 (자동 스크롤은 postMessage라 영향 없음) */
+  #holder iframe { pointer-events: none; }
+  #after { clip-path: inset(0 0 100% 0); }
+  #after.reveal { transition: clip-path 1.6s cubic-bezier(.75, 0, .2, 1); clip-path: inset(0); }
+
+  /* 와이프 엣지 + 스캔 (홀더 내부에 클리핑) */
+  #wipe-edge {
+    position: absolute; left: 0; right: 0; top: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--orange), transparent);
+    box-shadow: 0 0 24px rgba(255,107,26,.9);
+    z-index: 3; opacity: 0;
+  }
+  #wipe-edge.run { opacity: 1; animation: edge 1.6s cubic-bezier(.75, 0, .2, 1) forwards; }
+  @keyframes edge { from { top: 0; } to { top: 100%; opacity: 0; } }
+  #scan { position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: 0; transition: opacity .4s; }
+  #scan.on { opacity: 1; }
+  #scan::before {
+    content: "";
+    position: absolute; left: 0; right: 0; height: 140px;
+    background: linear-gradient(180deg, transparent, rgba(59,110,245,.15) 42%, rgba(59,110,245,.55) 50%, rgba(59,110,245,.15) 58%, transparent);
+    animation: scanmove 2.1s ease-in-out infinite;
+  }
+  @keyframes scanmove { 0% { top: -140px; } 100% { top: 100%; } }
+
+  /* ══════ AiApp 스튜디오 크롬 ══════ */
+  #studio {
+    position: fixed; inset: 0; z-index: 4;
+    display: flex;
+    opacity: 0;
+    transition: opacity .7s;
+    pointer-events: none;
+  }
+  #studio.show { opacity: 1; }
+
+  /* ── 좌측: 채팅 ── */
+  .feed {
+    width: var(--feed-w); flex-shrink: 0;
+    background: #fff;
+    border-right: 1px solid var(--line);
+    display: flex; flex-direction: column;
+  }
+  .feed__head {
+    padding: 15px 22px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13.5px; font-weight: 800; color: var(--ink);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .feed__head i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); font-style: normal; }
+  .chat { flex: 1; overflow-y: auto; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; scrollbar-color: #CBD4E4 transparent; }
+  .chat::-webkit-scrollbar { width: 6px; }
+  .chat::-webkit-scrollbar-thumb { background: #CBD4E4; border-radius: 99px; }
+
+  .u-pill { align-self: flex-end; background: var(--accent); color: #fff; font-size: 13px; font-weight: 600; border-radius: 999px; padding: 8px 16px; max-width: 92%; }
+  /* 지시가 입력되는 순간 — 말풍선 글로우로 시선 고정 */
+  .u-pill.hot {
+    box-shadow: 0 0 0 3px rgba(59,110,245,.25), 0 8px 32px rgba(59,110,245,.55);
+    animation: pillpop .5s cubic-bezier(.3,1.4,.5,1);
+  }
+  @keyframes pillpop { from { transform: scale(.82); opacity: 0; } to { transform: none; opacity: 1; } }
+  .a-line { font-size: 13.5px; line-height: 1.7; color: var(--ink); margin: 0; }
+  .chk { display: flex; gap: 8px; align-items: baseline; font-size: 13px; color: #5A6577; }
+  .chk::before { content: "✓"; color: var(--ok); font-weight: 800; }
+  .chk b { color: var(--ink); }
+
+  .console { background: var(--console); color: #E9EDF5; border-radius: 14px; padding: 14px 16px; flex-direction: column; gap: 8px; font-size: 12.5px; font-weight: 600; }
+  .console__t { font-size: 10.5px; color: rgba(255,255,255,.5); font-weight: 700; }
+  .crow { display: flex; align-items: center; gap: 9px; }
+  .crow i { width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.25); font-style: normal; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+  .crow.run i { border: 2px solid rgba(92,136,255,.25); border-top-color: #5C88FF; animation: spin 1s linear infinite; }
+  .crow.done i { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .crow.done i::before { content: "✓"; }
+  .crow span:last-child { margin-left: auto; font-family: var(--mono); font-size: 10.5px; color: rgba(255,255,255,.65); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .report { border: 1px solid var(--ok); box-shadow: 0 0 0 3px var(--ok-soft); border-radius: 14px; padding: 14px 16px; flex-direction: column; gap: 6px; }
+  .report .live { align-self: flex-start; background: var(--ok); color: #fff; font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .1em; border-radius: 999px; padding: 3px 11px; }
+  .report b { font-size: 15px; }
+  .report small { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  [data-step] { display: none; }
+  [data-step].show { display: flex; animation: rise .3s ease both; }
+  .a-line[data-step].show, .u-pill[data-step].show { display: block; }
+  .u-pill[data-step].show { display: inline-block; align-self: flex-end; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .feed__input { border-top: 1px solid var(--line); padding: 12px 18px; }
+  .feed__input div { border: 1px solid var(--line); border-radius: 999px; padding: 10px 16px; font-size: 12.5px; color: var(--muted); background: #F4F7FC; }
+
+  /* ── 우측: 패널 크롬 (탭 + 주소바) ── */
+  .panel { flex: 1; min-width: 0; display: flex; flex-direction: column; background: #F2F5FB; }
+  .ptabs { height: 48px; background: #fff; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 4px; padding: 0 16px; }
+  .ptab { border-radius: 9px; padding: 7px 14px; font-size: 12.5px; font-weight: 600; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; transition: background .3s, color .3s; }
+  .ptab.on { background: var(--accent-soft); color: var(--accent); }
+  .ph { width: 13px; height: 13px; fill: currentColor; flex-shrink: 0; }
+  .ptab .dot { min-width: 15px; height: 15px; border-radius: 999px; background: #F26A1B; color: #fff; font-size: 9.5px; font-weight: 800; font-style: normal; padding: 0 4px; display: none; align-items: center; justify-content: center; }
+  .ptab .dot.show { display: inline-flex; animation: pop .4s cubic-bezier(.3,1.4,.5,1), dotping 1.3s ease-out .4s infinite; }
+  @keyframes dotping { 0% { box-shadow: 0 0 0 0 rgba(242,106,27,.55); } 100% { box-shadow: 0 0 0 9px rgba(242,106,27,0); } }
+  .pbar { height: 44px; background: #fff; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 10px; padding: 0 16px; }
+  .pbar__addr { flex: 1; font-family: var(--mono); font-size: 11px; color: var(--muted); background: #F4F7FC; border: 1px solid var(--line); border-radius: 7px; padding: 5px 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pbar__badge { font-family: var(--mono); font-size: 10px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--accent); color: var(--accent); background: var(--accent-soft); display: flex; align-items: center; gap: 6px; }
+  .pbar__badge .sp { width: 10px; height: 10px; border-radius: 50%; border: 2px solid rgba(59,110,245,.3); border-top-color: var(--accent); animation: spin .9s linear infinite; }
+  .pbar__badge.live { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .pbar__badge.live .sp { display: none; }
+  .panel__body { flex: 1; position: relative; }
+
+  /* ── 데이터베이스 탭: db.html 콘솔 구조 (사이드바 + 인박스) ── */
+  #dbpane {
+    position: absolute; inset: 0;
+    background: #F6F8FB;
+    display: flex;
+    opacity: 0;
+    transition: opacity .5s;
+    pointer-events: none;
+  }
+  #dbpane.show { opacity: 1; }
+  /* 미니 사이드바 — 데이터 유형 */
+  .dbp-side {
+    width: 190px; flex-shrink: 0;
+    background: #fff;
+    border-right: 1px solid var(--line);
+    padding: 14px 10px 12px;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .dbp-label { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .05em; padding: 8px 10px 3px; }
+  .dbp-item {
+    border-radius: 9px;
+    padding: 8px 10px;
+    font-size: 12.5px; font-weight: 600; color: var(--ink);
+    display: flex; align-items: center; gap: 7px;
+  }
+  .dbp-item.on { background: var(--accent-soft); color: var(--accent); }
+  .dbp-count {
+    margin-left: auto;
+    font-family: var(--mono); font-size: 10px;
+    color: var(--muted);
+    background: #F4F7FC;
+    border-radius: 999px;
+    padding: 0 7px;
+  }
+  .dbp-item.on .dbp-count { background: rgba(59,110,245,.14); color: var(--accent); }
+  .dbp-new { width: 7px; height: 7px; border-radius: 50%; background: #E4574F; flex-shrink: 0; display: none; }
+  .dbp-new.show { display: block; animation: pop .4s cubic-bezier(.3,1.4,.5,1); }
+  @keyframes pop { from { transform: scale(.5); opacity: 0; } to { transform: none; opacity: 1; } }
+  .dbp-foot {
+    margin-top: auto;
+    padding: 10px 10px 2px;
+    border-top: 1px solid var(--line);
+    font-size: 10.5px; color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .dbp-foot b { color: var(--ok); }
+  /* 메인 */
+  .dbp-main {
+    flex: 1; min-width: 0;
+    overflow-y: auto;
+    padding: 20px 24px 24px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .dbp-head { display: flex; align-items: flex-start; gap: 12px; }
+  .dbp-head h3 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -.01em; }
+  .dbp-head p { margin: 3px 0 0; font-size: 12px; color: var(--muted); }
+  .dbp-export {
+    margin-left: auto; flex-shrink: 0;
+    border: 1px solid #CBD4E4; background: #fff;
+    border-radius: 10px; padding: 7px 14px;
+    font-size: 12.5px; font-weight: 600; color: var(--ink);
+    box-shadow: 0 1px 3px rgba(30,38,53,.05);
+  }
+  /* 새 견적 배너 */
+  .dbp-banner {
+    display: none;
+    align-items: center; gap: 10px;
+    border: 1px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 12.5px; font-weight: 600; color: var(--accent-deep);
+  }
+  .dbp-banner.show { display: flex; animation: rowin .5s cubic-bezier(.3,1.3,.5,1); }
+  .dbp-banner span { flex: 1; }
+  .dbp-banner button { border: none; border-radius: 8px; background: var(--accent); color: #fff; font-size: 12px; font-weight: 700; padding: 6px 13px; }
+  /* 검색 + 필터 칩 */
+  .dbp-filter { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .dbp-search {
+    display: flex; align-items: center; gap: 7px;
+    border: 1px solid var(--line); background: #fff;
+    border-radius: 9px; padding: 7px 12px;
+    min-width: 180px;
+    font-size: 12.5px; color: var(--muted);
+  }
+  .fchip {
+    border: 1px solid var(--line); background: #fff; color: var(--muted);
+    border-radius: 999px; padding: 5px 13px;
+    font-size: 11.5px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .fchip b { font-variant-numeric: tabular-nums; font-weight: 700; }
+  .fchip.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  /* 인박스 리스트 */
+  .inbox { background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 1px 3px rgba(30,38,53,.05), 0 4px 14px rgba(30,38,53,.05); overflow: hidden; }
+  .dbp-listfoot { display: flex; justify-content: space-between; gap: 10px; font-size: 11.5px; color: var(--muted); flex-wrap: wrap; }
+  .ib-row { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--line); }
+  .ib-row:last-of-type { border-bottom: none; }
+  .ib-row.new { background: var(--accent-soft); display: none; }
+  .ib-row.new.show { display: flex; animation: rowin .5s cubic-bezier(.3,1.3,.5,1); }
+  @keyframes rowin { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
+  .ib-ava { width: 38px; height: 38px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-deep); font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ib-body { flex: 1; min-width: 0; }
+  .ib-t { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+  .ib-t .newtag { font-family: var(--mono); font-size: 9px; font-weight: 700; color: var(--accent); background: #fff; border: 1px solid var(--accent); border-radius: 999px; padding: 1px 7px; }
+  .ib-d { font-size: 12px; color: var(--muted); }
+  .ib-act { border: none; border-radius: 10px; background: var(--accent); color: #fff; font-size: 13px; font-weight: 700; padding: 9px 18px; flex-shrink: 0; }
+  .ib-act.done { background: var(--ok-soft); color: var(--ok); }
+  .ib-act.pulse { animation: actpulse 1s ease infinite; }
+  @keyframes actpulse { 0%,100% { box-shadow: 0 0 0 0 rgba(59,110,245,.5); } 50% { box-shadow: 0 0 0 9px rgba(59,110,245,0); } }
+  .ib-foot { padding: 11px 20px; font-size: 11.5px; color: var(--muted); background: #F6F8FB; border-top: 1px solid var(--line); }
+  /* ── Excel-style sheet (db.html principle: DB tab is view-only, actions live in Settings) ── */
+  .dbsheet { background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 1px 3px rgba(30,38,53,.05), 0 4px 14px rgba(30,38,53,.05); overflow: hidden; }
+  .dbsheet table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .dbsheet th, .dbsheet td { padding: 9px 12px; border-bottom: 1px solid var(--line); border-right: 1px solid #EEF2F8; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dbsheet th:last-child, .dbsheet td:last-child { border-right: none; }
+  .dbsheet tbody tr:last-child td { border-bottom: none; }
+  .dbsheet thead th { background: #F6F8FB; font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .03em; }
+  .dbsheet .rn { width: 34px; color: var(--muted); font-family: var(--mono); font-size: 10px; background: #FAFBFD; text-align: center; }
+  .dbsheet .mono { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .dbsheet .newtag { font-family: var(--mono); font-size: 9px; font-weight: 700; color: var(--accent); background: #fff; border: 1px solid var(--accent); border-radius: 999px; padding: 1px 7px; margin-left: 6px; }
+  .dbsheet .st { font-family: var(--mono); font-size: 10px; border-radius: 999px; padding: 2px 9px; }
+  .dbsheet .st.wait { color: #E08A00; border: 1px solid #E08A00; background: #FCF3E1; }
+  .dbsheet .st.ok { color: #16A374; border: 1px solid #16A374; background: #E5F6EF; }
+  .dbsheet tr.new { display: none; background: var(--accent-soft); }
+  .dbsheet tr.new.show { display: table-row; animation: rowin .5s cubic-bezier(.3,1.3,.5,1); }
+  #ib-manage.pulse { animation: actpulse 1s ease infinite; }
+
+  /* ── Settings tab: admin console (actions happen here, not in the DB view) ── */
+  #mgpane { position: absolute; inset: 0; background: #F6F8FB; display: flex; opacity: 0; transition: opacity .5s; pointer-events: none; }
+  #mgpane.show { opacity: 1; }
+  .mgp-side { width: 170px; flex-shrink: 0; background: #fff; border-right: 1px solid var(--line); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px; }
+  .mgp-brand { font-size: 15px; font-weight: 800; letter-spacing: -.01em; padding: 2px 10px 10px; color: var(--accent-deep); }
+  .mgp-sec { font-size: 9.5px; font-weight: 700; color: var(--muted); letter-spacing: .06em; padding: 10px 10px 3px; }
+  .mgp-item { border-radius: 9px; padding: 7px 10px; font-size: 12px; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 6px; }
+  .mgp-item.on { background: var(--accent-soft); color: var(--accent); }
+  .mgp-cnt { margin-left: auto; min-width: 15px; height: 15px; border-radius: 999px; background: #F26A1B; color: #fff; font-size: 9.5px; font-weight: 800; font-style: normal; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; }
+  .mgp-main { flex: 1; min-width: 0; overflow-y: auto; padding: 18px 22px 22px; display: flex; flex-direction: column; gap: 13px; }
+  .mgp-hero { display: flex; align-items: center; gap: 14px; background: linear-gradient(100deg, #EEF3FE, #F8FBFF); border: 1px solid #DDE7FA; border-radius: 14px; padding: 15px 18px; }
+  .mgp-hero-ic { width: 42px; height: 42px; border-radius: 12px; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .mgp-hero-ic .ph { width: 20px; height: 20px; }
+  .mgp-hero h3 { margin: 0; font-size: 16px; font-weight: 800; letter-spacing: -.01em; }
+  .mgp-hero p { margin: 3px 0 0; font-size: 12px; color: var(--muted); }
+  .mgp-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 11.5px; color: var(--muted); font-weight: 600; flex-wrap: wrap; }
+  .mgp-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .mgp-card { background: #fff; border: 1px solid var(--line); border-radius: 13px; padding: 14px 15px 12px; display: flex; flex-direction: column; gap: 7px; box-shadow: 0 1px 3px rgba(30,38,53,.05); transition: border-color .4s, box-shadow .4s; }
+  .mgp-card.new { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .mgp-card-t { font-size: 13.5px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+  .mgp-card-t .newtag { font-family: var(--mono); font-size: 9px; font-weight: 700; color: var(--accent); background: #fff; border: 1px solid var(--accent); border-radius: 999px; padding: 1px 7px; }
+  .mgp-card-d { font-size: 11.5px; color: var(--muted); line-height: 1.55; flex: 1; }
+  .mgp-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px solid var(--line); padding-top: 10px; }
+  .mgp-st { font-family: var(--mono); font-size: 10px; border-radius: 999px; padding: 2px 9px; }
+  .mgp-st.wait { color: #E08A00; border: 1px solid #E08A00; background: #FCF3E1; }
+  .mgp-st.ok { color: #16A374; border: 1px solid #16A374; background: #E5F6EF; }
+  .mgp-reply { border: none; border-radius: 9px; background: var(--accent); color: #fff; font-size: 12px; font-weight: 700; padding: 7px 14px; }
+  .mgp-reply.ghost { background: #EDF2FB; color: var(--accent-deep); }
+  .mgp-reply.pulse { animation: actpulse 1s ease infinite; }
+  .mgp-reply.done { background: var(--ok-soft); color: var(--ok); animation: none; }
+
+  /* ══════ 링크 입력 컴포저 ══════ */
+  #dim { position: fixed; inset: 0; z-index: 6; background: rgba(6,12,26,.68); opacity: 0; pointer-events: none; transition: opacity .5s; }
+  #dim.show { opacity: 1; }
+
+  /* 채팅 포커스 — 지시 입력 순간 미리보기만 잠깐 어둡게 (docked 홀더 위를 덮음) */
+  #pvdim {
+    position: fixed;
+    top: var(--chrome-h); left: calc(var(--feed-w) + 1px); right: 0; bottom: 0;
+    z-index: 6;
+    background: rgba(6,12,26,.45);
+    opacity: 0; pointer-events: none;
+    transition: opacity .45s;
+  }
+  #pvdim.show { opacity: 1; }
+  #composer {
+    position: fixed; left: 50%; top: 42%; transform: translate(-50%, -50%) scale(.92);
+    z-index: 7;
+    width: min(780px, 92vw);
+    background: #fff; border-radius: 26px;
+    /* 파란 글로우 링으로 화면의 주인공임을 표시 */
+    box-shadow:
+      0 0 0 1px rgba(59,110,245,.3),
+      0 0 0 10px rgba(59,110,245,.14),
+      0 0 90px rgba(59,110,245,.35),
+      0 40px 110px rgba(6,12,26,.65);
+    padding: 26px 30px 22px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .4s, transform .45s cubic-bezier(.3,1.2,.4,1);
+  }
+  #composer.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  #composer .c-brand { display: flex; align-items: center; gap: 9px; font-size: 14.5px; font-weight: 800; color: var(--ink); margin-bottom: 14px; }
+  #composer .c-brand i { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #4C7DFF, #2A56D8); color: #fff; font-style: normal; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+  #composer .c-row { display: flex; align-items: center; gap: 16px; }
+  #composer .c-text { flex: 1; font-size: 21px; font-weight: 600; color: var(--ink); min-height: 34px; letter-spacing: -.01em; }
+  #composer .c-text::after { content: "▌"; color: var(--accent); animation: caret .8s step-start infinite; }
+  @keyframes caret { 50% { opacity: 0; } }
+  #composer .c-send { width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(135deg, #4C7DFF, #2A56D8); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 23px; box-shadow: 0 8px 24px rgba(59,110,245,.5); flex-shrink: 0; }
+  #composer .c-send.pulse { animation: sendpulse .5s ease; }
+  @keyframes sendpulse { 40% { transform: scale(.8); } 100% { transform: scale(1); } }
+
+  /* ══════ 자막 · 토스트 · 엔드 ══════ */
+  /* 자막 — 프로스티드 글래스: 색이 아니라 블러·보더로 분리되는 시스템 레이어 */
+  #cap {
+    position: fixed; left: 50%; bottom: 6vh; transform: translateX(-50%) translateY(14px);
+    z-index: 8;
+    background: rgba(11, 14, 24, .86);
+    backdrop-filter: blur(18px) saturate(1.3);
+    border: 1px solid rgba(255, 255, 255, .18);
+    color: #fff;
+    font-size: clamp(18px, 2vw, 23px);
+    font-weight: 700;
+    letter-spacing: -.01em;
+    border-radius: 999px;
+    padding: 14px 32px;
+    box-shadow: 0 12px 44px rgba(0, 0, 0, .4);
+    opacity: 0; transition: opacity .45s, transform .45s;
+    white-space: nowrap;
+  }
+  /* AiApp 내레이터 마커 */
+  #cap::before {
+    content: "✦";
+    color: #7FA4FF;
+    margin-right: 12px;
+    font-weight: 400;
+  }
+  #cap.show { opacity: 1; transform: translateX(-50%); }
+
+  /* 새 견적 알림 — OS 푸시 알림 카드처럼 크게, 주황 파동으로 시선 고정 */
+  #toast {
+    position: fixed; top: 20px; right: 20px; transform: translateY(-20px) scale(.92);
+    z-index: 8;
+    background: var(--console); color: #fff;
+    border: 1px solid rgba(242,106,27,.5);
+    border-radius: 16px; padding: 14px 24px 14px 14px;
+    box-shadow: 0 18px 50px rgba(0,0,0,.5), 0 0 0 5px rgba(242,106,27,.16);
+    opacity: 0; transition: opacity .4s, transform .5s cubic-bezier(.3,1.4,.5,1);
+    display: flex; align-items: center; gap: 13px;
+  }
+  #toast.show { opacity: 1; transform: none; }
+  #toast .t-icon {
+    position: relative;
+    width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+    background: linear-gradient(135deg, #FFA53C, #F26A1B);
+    font-style: normal; font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #toast.show .t-icon::after {
+    content: ""; position: absolute; inset: 0; border-radius: 12px;
+    animation: toastping 1.4s ease-out .2s infinite;
+  }
+  @keyframes toastping { 0% { box-shadow: 0 0 0 0 rgba(242,106,27,.55); } 100% { box-shadow: 0 0 0 16px rgba(242,106,27,0); } }
+  #toast .t-body b { display: block; font-size: 15px; font-weight: 800; letter-spacing: -.01em; }
+  #toast .t-body small { display: block; margin-top: 3px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,.65); }
+
+  #end {
+    position: fixed; inset: 0; z-index: 9;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+    background:
+      radial-gradient(700px 420px at 50% 0%, rgba(59,110,245,.28), transparent 60%),
+      linear-gradient(165deg, #0B1730, #142A55);
+    color: #fff; text-align: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity .9s;
+  }
+  #end.show { opacity: 1; }
+  #end .logo-img { height: 52px; width: auto; display: block; }
+  #end h1 { margin: 0; font-size: clamp(32px, 4.8vw, 56px); font-weight: 800; letter-spacing: -.03em; line-height: 1.25; text-wrap: balance; }
+  #end p { margin: 0; font-size: 18px; color: rgba(255,255,255,.6); }
+  #end .logo-img, #end h1, #end p { opacity: 0; transform: translateY(16px); transition: opacity .7s, transform .7s; }
+  #end.show .logo-img { opacity: 1; transform: none; transition-delay: .2s; }
+  #end.show h1   { opacity: 1; transform: none; transition-delay: .5s; }
+  #end.show p    { opacity: 1; transform: none; transition-delay: .85s; }
+</style>
+</head>
+<body>
+<!-- Phosphor Icons (MIT, phosphoricons.com) — same sprite as db.html, only icons used in this demo -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+<symbol id="ph-eye" viewBox="0 0 256 256"><path d="M247.31,124.76c-.35-.79-8.82-19.58-27.65-38.41C194.57,61.26,162.88,48,128,48S61.43,61.26,36.34,86.35C17.51,105.18,9,124,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208s66.57-13.26,91.66-38.34c18.83-18.83,27.3-37.61,27.65-38.4A8,8,0,0,0,247.31,124.76ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.47,133.47,0,0,1,25,128,133.33,133.33,0,0,1,48.07,97.25C70.33,75.19,97.22,64,128,64s57.67,11.19,79.93,33.25A133.46,133.46,0,0,1,231.05,128C223.84,141.46,192.43,192,128,192Zm0-112a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"/></symbol>
+<symbol id="ph-database" viewBox="0 0 256 256"><path d="M128,24C74.17,24,32,48.6,32,80v96c0,31.4,42.17,56,96,56s96-24.6,96-56V80C224,48.6,181.83,24,128,24Zm80,104c0,9.62-7.88,19.43-21.61,26.92C170.93,163.35,150.19,168,128,168s-42.93-4.65-58.39-13.08C55.88,147.43,48,137.62,48,128V111.36c17.06,15,46.23,24.64,80,24.64s62.94-9.68,80-24.64ZM69.61,53.08C85.07,44.65,105.81,40,128,40s42.93,4.65,58.39,13.08C200.12,60.57,208,70.38,208,80s-7.88,19.43-21.61,26.92C170.93,115.35,150.19,120,128,120s-42.93-4.65-58.39-13.08C55.88,99.43,48,89.62,48,80S55.88,60.57,69.61,53.08ZM186.39,202.92C170.93,211.35,150.19,216,128,216s-42.93-4.65-58.39-13.08C55.88,195.43,48,185.62,48,176V159.36c17.06,15,46.23,24.64,80,24.64s62.94-9.68,80-24.64V176C208,185.62,200.12,195.43,186.39,202.92Z"/></symbol>
+<symbol id="ph-palette" viewBox="0 0 256 256"><path d="M200.77,53.89A103.27,103.27,0,0,0,128,24h-1.07A104,104,0,0,0,24,128c0,43,26.58,79.06,69.36,94.17A32,32,0,0,0,136,192a16,16,0,0,1,16-16h46.21a31.81,31.81,0,0,0,31.2-24.88,104.43,104.43,0,0,0,2.59-24A103.28,103.28,0,0,0,200.77,53.89Zm13,93.71A15.89,15.89,0,0,1,198.21,160H152a32,32,0,0,0-32,32,16,16,0,0,1-21.31,15.07C62.49,194.3,40,164,40,128a88,88,0,0,1,87.09-88h.9a88.35,88.35,0,0,1,88,87.25A88.86,88.86,0,0,1,213.81,147.6ZM140,76a12,12,0,1,1-12-12A12,12,0,0,1,140,76ZM96,100A12,12,0,1,1,84,88,12,12,0,0,1,96,100Zm0,56a12,12,0,1,1-12-12A12,12,0,0,1,96,156Zm88-56a12,12,0,1,1-12-12A12,12,0,0,1,184,100Z"/></symbol>
+<symbol id="ph-gear" viewBox="0 0 256 256"><path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"/></symbol>
+<symbol id="ph-chat-circle" viewBox="0 0 256 256"><path d="M128,24A104,104,0,0,0,36.18,176.88L24.83,210.93a16,16,0,0,0,20.24,20.24l34.05-11.35A104,104,0,1,0,128,24Zm0,192a87.87,87.87,0,0,1-44.06-11.81,8,8,0,0,0-6.54-.67L40,216,52.47,178.6a8,8,0,0,0-.66-6.54A88,88,0,1,1,128,216Z"/></symbol>
+</svg>
+
+<!-- ══════ AiApp 스튜디오 크롬 ══════ -->
+<div id="studio">
+  <section class="feed">
+    <div class="feed__head"><i></i> AiApp Studio</div>
+    <div class="chat" id="chat">
+      <span class="u-pill" data-step="0">Renew this site: https://oo-precision.co.kr</span>
+      <p class="a-line" data-step="1">Reading the existing site 🔍 The design is dated, but there's a lot of live data.</p>
+      <div class="chk" data-step="2"><span><b>4 products</b> — part numbers & specs included (DP-2043, etc.)</span></div>
+      <div class="chk" data-step="3"><span><b>11 machines</b> — CNC lathes · MCT · grinders · CMM</span></div>
+      <div class="chk" data-step="4"><span><b>512 board quotes</b> — 2 open requests found</span></div>
+      <div class="chk" data-step="5"><span><b>History & certs (4)</b> — Est. 1987 · ISO 9001</span></div>
+      <p class="a-line" data-step="6">I'll assemble a new design from this data. Fax quotes become an <b>online quote form</b>.</p>
+      <div class="console" data-step="7">
+        <span class="console__t">PROGRESS</span>
+        <div class="crow" id="c1"><i></i><span>Data migration (ETL)</span><span>Pending</span></div>
+        <div class="crow" id="c2"><i></i><span>Building pages</span><span>Pending</span></div>
+        <div class="crow" id="c3"><i></i><span>Launch &amp; ops</span><span>Pending</span></div>
+      </div>
+      <div class="report" data-step="8">
+        <span class="live">LIVE</span>
+        <b>OO Precision — Renewal complete</b>
+        <small>4 products · 11 machines · 512 posts migrated<br>Quotes: FAX → online form + alerts</small>
+      </div>
+      <p class="a-line" data-step="9">🔔 A <b>new quote</b> already came in! Shall we open the Database tab?</p>
+      <span class="u-pill" data-step="10">Change the headline to "Same-day quotes"</span>
+      <p class="a-line" data-step="11">Done! Check the preview. I saved the previous version, so you can <b>roll back</b> if you don't like it.</p>
+      <span class="u-pill" data-step="12">📎 1 photo · Add a new product too: "Universal Coupling DP-7120"</span>
+      <p class="a-line" data-step="13">Added it to the products page 🧩 I even built the card from your photo.</p>
+      <span class="u-pill" data-step="14">Post a summer holiday notice for Aug 4–8</span>
+      <p class="a-line" data-step="15">Notice posted 📢 It shows as a popup, and quotes keep coming in online during the break.</p>
+    </div>
+    <div class="feed__input"><div>Running autonomously — I'll let you know when it's done</div></div>
+  </section>
+
+  <section class="panel">
+    <div class="ptabs">
+      <span class="ptab on" id="tab-pv"><svg class="ph"><use href="#ph-eye"/></svg>Preview</span>
+      <span class="ptab" id="tab-db"><svg class="ph"><use href="#ph-database"/></svg>Database <i class="dot" id="tab-db-dot">1</i></span>
+      <span class="ptab"><svg class="ph"><use href="#ph-palette"/></svg>Brand</span>
+      <span class="ptab" id="tab-mg"><svg class="ph"><use href="#ph-gear"/></svg>Settings <i class="dot" id="tab-mg-dot">1</i></span>
+    </div>
+    <div class="pbar">
+      <span style="font-size:12.5px; font-weight:700; color:var(--ink); display:inline-flex; align-items:center; gap:6px;"><svg class="ph"><use href="#ph-eye"/></svg>Preview</span>
+      <span class="pbar__addr" id="addr">oo-precision.co.kr (existing site)</span>
+      <span class="pbar__badge" id="badge"><span class="sp"></span><span id="badge-t">Analyzing</span></span>
+    </div>
+    <div class="panel__body">
+      <!-- 데이터베이스 탭: db.html 콘솔 구조 -->
+      <div id="dbpane">
+        <!-- 사이드바: 이전된 데이터 유형 -->
+        <aside class="dbp-side">
+          <div class="dbp-label">DATA</div>
+          <div class="dbp-item on">📥 Quote Requests <i class="dbp-new" id="side-new"></i><span class="dbp-count" id="side-count">2</span></div>
+          <div class="dbp-item">📦 Products <span class="dbp-count">4</span></div>
+          <div class="dbp-item">🏭 Equipment <span class="dbp-count">11</span></div>
+          <div class="dbp-item">📋 Board <span class="dbp-count">512</span></div>
+          <div class="dbp-foot"><b>✓</b> Migrated from the old site · auto-backed up daily</div>
+        </aside>
+
+        <!-- 메인: 견적 인박스 -->
+        <div class="dbp-main">
+          <div class="dbp-head">
+            <div>
+              <h3>Quote Requests</h3>
+              <p>Every quote lands in this sheet automatically, one row each. View-only — replies happen in <b>Settings</b>.</p>
+            </div>
+            <button class="dbp-export">⬇ Export to Excel</button>
+          </div>
+
+          <!-- 새 견적 도착 배너 -->
+          <div class="dbp-banner" id="ib-banner">
+            <span>🔔 New quote arrived — reply from the Settings screen</span>
+            <button id="ib-manage">Open Settings</button>
+          </div>
+
+          <!-- 검색 + 상태 필터 -->
+          <div class="dbp-filter">
+            <span class="dbp-search">🔍 Search by company or contact</span>
+            <span class="fchip on">All <b id="cnt-all">2</b></span>
+            <span class="fchip">Pending <b id="cnt-wait">1</b></span>
+            <span class="fchip">Replied <b>1</b></span>
+          </div>
+
+          <!-- Excel-style sheet — view-only (db.html principle: actions live in Settings) -->
+          <div class="dbsheet">
+            <table>
+              <thead>
+                <tr><th class="rn">#</th><th>client</th><th>item</th><th>attach</th><th>created_at</th><th>status</th></tr>
+              </thead>
+              <tbody>
+                <tr class="new" id="ib-new">
+                  <td class="rn">1</td><td><b>Hanbit Tech</b><span class="newtag">NEW</span></td><td>Precision shaft, 500 EA</td><td class="mono">1 drawing</td><td class="mono">just now</td><td><span class="st wait">Pending</span></td>
+                </tr>
+                <tr>
+                  <td class="rn">2</td><td><b>Mr. Park</b></td><td>Hydraulic block, 20 EA lead-time inquiry</td><td class="mono">—</td><td class="mono">2026-06-30</td><td><span class="st wait">Pending</span></td>
+                </tr>
+                <tr>
+                  <td class="rn">3</td><td><b>Mgr. Lee</b></td><td>Jig prototype inquiry</td><td class="mono">—</td><td class="mono">2026-05-12</td><td><span class="st ok">Replied</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="dbp-listfoot">
+            <span id="foot-count">2 total · 1 pending</span>
+            <span>Auto-saved and backed up daily</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings tab: admin console — actions live here, separate from the view-only DB -->
+      <div id="mgpane">
+        <aside class="mgp-side">
+          <div class="mgp-brand">mBaaS</div>
+          <div class="mgp-sec">MEMBERS</div>
+          <div class="mgp-item">Members</div>
+          <div class="mgp-sec">CONTENT</div>
+          <div class="mgp-item on">Quote Requests <i class="mgp-cnt" id="mg-cnt">1</i></div>
+          <div class="mgp-item">Products</div>
+          <div class="mgp-item">Board</div>
+          <div class="mgp-sec">MESSAGING</div>
+          <div class="mgp-item">Messages</div>
+          <div class="mgp-item">Push</div>
+        </aside>
+        <div class="mgp-main">
+          <div class="mgp-hero">
+            <span class="mgp-hero-ic"><svg class="ph"><use href="#ph-chat-circle"/></svg></span>
+            <div>
+              <h3>Quote Manager</h3>
+              <p>Review incoming quotes and reply with a single button</p>
+            </div>
+          </div>
+          <div class="mgp-row"><span id="mg-count">3 total · 2 pending</span><span>Replies go straight to the customer by email &amp; alert</span></div>
+          <div class="mgp-cards">
+            <div class="mgp-card new" id="mg-new">
+              <div class="mgp-card-t">Hanbit Tech <span class="newtag">NEW</span></div>
+              <div class="mgp-card-d">Precision shaft, 500 EA · 1 drawing attached · just now</div>
+              <div class="mgp-card-foot"><span class="mgp-st wait" id="mg-st">Pending</span><button class="mgp-reply" id="mg-reply">Reply</button></div>
+            </div>
+            <div class="mgp-card">
+              <div class="mgp-card-t">Mr. Park</div>
+              <div class="mgp-card-d">Hydraulic block, 20 EA lead-time inquiry · Jun 30</div>
+              <div class="mgp-card-foot"><span class="mgp-st wait">Pending</span><button class="mgp-reply ghost">Reply</button></div>
+            </div>
+            <div class="mgp-card">
+              <div class="mgp-card-t">Mgr. Lee</div>
+              <div class="mgp-card-d">Jig prototype inquiry · May 12</div>
+              <div class="mgp-card-foot"><span class="mgp-st ok">Replied</span><button class="mgp-reply done">Replied</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════ 사이트 홀더 (Before/After iframe) ══════ -->
+<div id="holder">
+  <iframe id="before" src="legacy-b2b_en.html" title="Before"></iframe>
+  <iframe id="after" src="renewed-b2b_en.html" title="After"></iframe>
+  <div id="wipe-edge"></div>
+  <div id="scan"></div>
+</div>
+
+<div id="dim"></div>
+<div id="pvdim"></div>
+
+<!-- 링크 입력 -->
+<div id="composer">
+  <div class="c-brand"><i>✦</i> AiApp — What should we build?</div>
+  <div class="c-row">
+    <div class="c-text" id="typed"></div>
+    <div class="c-send" id="send">↑</div>
+  </div>
+</div>
+
+<div id="toast">
+  <i class="t-icon">📥</i>
+  <div class="t-body">
+    <b>New quote received</b>
+    <small>Hanbit Tech — Precision shaft, 500 EA · drawing attached · just now</small>
+  </div>
+</div>
+<div id="cap"></div>
+
+<!-- 엔드카드 -->
+<div id="end">
+  <img class="logo-img" src="img/(New)Aiapp_logo(w)_240625.svg" alt="AiApp">
+  <h1>Old website,<br>today's service.</h1>
+  <p>Your data intact — design and operations, brought up to date.</p>
+</div>
+
+<script>
+  /* 재생 속도 — 1이 원래 속도, 낮을수록 빠름 (0.75 = 약 25% 빠르게) */
+  const SPEED = 0.75;
+
+  const $ = (s) => document.querySelector(s);
+  const before = $("#before"), after = $("#after");
+  const toBefore = (m) => before.contentWindow.postMessage(m, "*");
+  const toAfter = (m) => after.contentWindow.postMessage(m, "*");
+
+  let capT;
+  function cap(txt, hold = 3200) {
+    const el = $("#cap");
+    clearTimeout(capT);
+    el.textContent = txt;
+    el.classList.add("show");
+    capT = setTimeout(() => el.classList.remove("show"), hold);
+  }
+  function typeText(str, done) {
+    const el = $("#typed");
+    el.textContent = "";
+    let i = 0;
+    const iv = setInterval(() => {
+      el.textContent = str.slice(0, ++i);
+      if (i >= str.length) { clearInterval(iv); done && done(); }
+    }, Math.round(46 * SPEED));
+  }
+  function step(n) {
+    document.querySelector(`[data-step="${n}"]`).classList.add("show");
+    const c = $("#chat");
+    c.scrollTop = c.scrollHeight;
+  }
+  /* 지시 입력 순간: 말풍선 글로우 + 미리보기 딤 → hold 후 원복 */
+  function chatHot(n, hold = 1400) {
+    const pill = document.querySelector(`[data-step="${n}"]`);
+    pill.classList.add("hot");
+    $("#pvdim").classList.add("show");
+    setTimeout(() => {
+      pill.classList.remove("hot");
+      $("#pvdim").classList.remove("show");
+    }, Math.round(hold * SPEED));
+  }
+  function crow(id, state, txt) {
+    const el = document.getElementById(id);
+    el.className = "crow " + state;
+    el.querySelector("span:last-child").textContent = txt;
+  }
+
+  /* ══════ 타임라인 ══════ */
+  const T = [];
+  const at = (ms, fn) => T.push([ms, fn]);
+
+  /* ── 1장. Before — 무엇이 죽어있는가 (풀스크린) ── */
+  at(500,   () => cap("A website frozen since 2014"));
+  at(1100,  () => toBefore({ act: "focus", sel: "#flash-banner",
+             title: "❌ Adobe Flash Player — End of support",
+             desc: "The main banner has been broken for 6 years" }));
+  at(4400,  () => toBefore({ act: "focus", sel: "#products-old",
+             title: "❌ Product photos — “No image”",
+             desc: "“Coming soon” for 10 years now" }));
+  at(7600,  () => toBefore({ act: "focus", sel: "#popup",
+             title: "❌ “Website renewal in progress”",
+             desc: "Since March 2015 — still" }));
+  at(10800, () => toBefore({ act: "focus", sel: "#board-old", tone: "warn",
+             title: "⚠ Yet — quote requests still come in",
+             desc: "2 new this month. Still unanswered" }));
+
+  /* ── 2장. 링크 한 줄 ── */
+  at(14200, () => { toBefore({ act: "clear" }); toBefore({ act: "top" }); });
+  at(14400, () => { $("#dim").classList.add("show"); cap("Just give AiApp the URL"); });
+  at(15000, () => {
+    $("#composer").classList.add("show");
+    typeText("Renew this site: https://oo-precision.co.kr", () => {
+      setTimeout(() => $("#send").classList.add("pulse"), 250);
+    });
+  });
+
+  /* ── 3장. 스튜디오 진입 — 사이트가 미리보기 패널로 도킹 ── */
+  at(18600, () => {
+    $("#composer").classList.remove("show");
+    $("#dim").classList.remove("show");
+    $("#studio").classList.add("show");
+    $("#holder").classList.add("docked");
+  });
+  at(19300, () => { step(0); $("#scan").classList.add("on"); });
+  at(20000, () => step(1));
+  at(20900, () => step(2));
+  at(21300, () => step(3));
+  at(21700, () => step(4));
+  at(22100, () => step(5));
+  at(23000, () => { step(6); step(7); crow("c1", "run", "In progress"); });
+  at(24400, () => { crow("c1", "done", "Done"); crow("c2", "run", "In progress"); });
+
+  /* ── 4장. 미리보기 안에서 와이프 전환 ── */
+  at(25000, () => {
+    $("#scan").classList.remove("on");
+    after.classList.add("reveal");
+    $("#wipe-edge").classList.add("run");
+    cap("Your data — in today's design");
+  });
+  at(26600, () => {
+    $("#addr").textContent = "https://oo-precision.aiapp.site";
+    crow("c2", "done", "Done"); crow("c3", "run", "In progress");
+  });
+  at(27800, () => {
+    crow("c3", "done", "Done");
+    $("#badge").classList.add("live");
+    $("#badge-t").textContent = "LIVE";
+    step(8);
+  });
+
+  /* ── 5장. After 둘러보기 (미리보기 안 자동 스크롤) ── */
+  at(29200, () => toAfter({ act: "toSection", sel: "#sec-products" }));
+  at(31800, () => { toAfter({ act: "toSection", sel: "#sec-quote" }); cap("Fax quotes become an online form"); });
+
+  /* ── 6장. 데이터베이스 탭 — 견적 인박스 ── */
+  at(34600, () => {
+    step(9);
+    $("#tab-db-dot").classList.add("show");
+    $("#toast").classList.add("show");
+    cap("Day one — a new quote already arrived", 2700);
+  });
+  at(37400, () => {
+    $("#tab-pv").classList.remove("on");
+    $("#tab-db").classList.add("on");
+    $("#tab-db-dot").classList.remove("show");
+    $("#holder").classList.add("gone");
+    $("#dbpane").classList.add("show");
+    cap("All migrated data, in one sheet");
+  });
+  at(38200, () => {
+    $("#toast").classList.remove("show");
+    $("#ib-new").classList.add("show");
+    $("#ib-banner").classList.add("show");
+    $("#side-new").classList.add("show");
+    $("#side-count").textContent = "3";
+    $("#cnt-all").textContent = "3";
+    $("#cnt-wait").textContent = "2";
+    $("#foot-count").textContent = "3 total · 2 pending";
+  });
+  at(39000, () => {
+    $("#ib-manage").classList.add("pulse");
+    $("#tab-mg-dot").classList.add("show");
+  });
+  at(40600, () => cap("Data piles up on its own — handled in Settings", 2400));
+
+  /* ── Scene 6b. Settings — reply from the admin console with one button ── */
+  at(41800, () => {
+    $("#tab-db").classList.remove("on");
+    $("#tab-mg").classList.add("on");
+    $("#tab-mg-dot").classList.remove("show");
+    $("#dbpane").classList.remove("show");
+    $("#mgpane").classList.add("show");
+  });
+  at(42600, () => $("#mg-reply").classList.add("pulse"));
+  at(43600, () => {
+    const rb = $("#mg-reply");
+    rb.classList.remove("pulse");
+    rb.classList.add("done");
+    rb.textContent = "Replied";
+    const st = $("#mg-st");
+    st.classList.remove("wait");
+    st.classList.add("ok");
+    st.textContent = "Replied";
+    $("#mg-new").classList.remove("new");
+    $("#mg-count").textContent = "3 total · 1 pending";
+    $("#mg-cnt").style.display = "none";
+    cap("One button to reply — sent straight to the customer", 2600);
+  });
+
+  /* ── 7장. 채팅으로 수정 — 개발사 없이, 기다림 없이 (6장 자막 후 한 템포 쉬고) ── */
+  at(45600, () => cap("Changing one line used to mean calling your agency and waiting", 3600));
+  at(49400, () => {
+    /* 미리보기 탭으로 복귀 */
+    $("#tab-mg-dot").classList.remove("show");
+    $("#tab-mg").classList.remove("on");
+    $("#mgpane").classList.remove("show");
+    $("#tab-db").classList.remove("on");
+    $("#tab-pv").classList.add("on");
+    $("#dbpane").classList.remove("show");
+    $("#holder").classList.remove("gone");
+    step(10);
+    chatHot(10);
+  });
+  at(50800, () => {
+    step(11);
+    toAfter({ act: "setHero", html: "Send a drawing,<br><em>same-day</em> quote." });
+  });
+  at(51800, () => cap("Now one message does it — the previous version is saved too", 3600));
+
+  /* ── 8장. 제품 추가 — 신제품도 채팅으로 등록 ── */
+  at(55800, () => { step(12); chatHot(12); });
+  at(57200, () => {
+    step(13);
+    toAfter({ act: "addProduct" });
+  });
+  at(58600, () => cap("New products too — no code, no waiting", 3200));
+
+  /* ── 9장. 공지 올리기 — 마지막 공지가 2015년이었죠 ── */
+  at(63200, () => { step(14); chatHot(14); });
+  at(64600, () => {
+    step(15);
+    toAfter({ act: "notice" });
+  });
+  at(65600, () => cap("Your last notice was in 2015 — now it takes just a word", 4000));
+
+  /* ── 10장. 엔드 ── */
+  at(70200, () => $("#end").classList.add("show"));
+
+  addEventListener("load", () => {
+    setTimeout(() => T.forEach(([ms, fn]) => setTimeout(fn, Math.round(ms * SPEED))), 300);
+  });
+  addEventListener("keydown", (e) => {
+    if (e.key.toLowerCase() === "r") location.reload();
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OO Precision — Your CNC Precision Machining Partner | Online Quote</title>
+<!-- Demo: preload the new-product image so the card doesn't appear empty during the add-product scene -->
+<link rel="preload" as="image" href="img/product-05.png">
+<!-- ============================================================
+     [After screen v2 for video demo — trendy redesign]
+     Concept: "precision" as the visual motif — blueprint grid,
+     crosshairs, monospace spec typography, marquee ticker.
+     Inherits the Before brand DNA: navy + orange, part no. DP-####, 1987.
+     Image placeholders (.img-slot) to be replaced with real photos.
+     ============================================================ -->
+<style>
+  :root {
+    --navy-950: #0B1730;
+    --navy-900: #101F3D;
+    --navy-700: #1F3A6E;
+    --navy-100: #E8EDF6;
+    --steel-50: #F6F8FB;
+    --ink: #16203A;
+    --muted: #66718A;
+    --line: #E2E7F0;
+    --orange: #FF6B1A;
+    --orange-deep: #E8641B;
+    --orange-soft: #FFF0E5;
+    --mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+    --radius: 18px;
+    --shadow: 0 2px 6px rgba(16,31,61,.06), 0 18px 50px rgba(16,31,61,.10);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif;
+    color: var(--ink);
+    background: #fff;
+    line-height: 1.65;
+    font-size: 16px;
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+  .mono { font-family: var(--mono); }
+
+  /* Scroll reveal */
+  .rv { opacity: 0; transform: translateY(22px); transition: opacity .6s ease, transform .6s ease; }
+  .rv.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .rv { opacity: 1; transform: none; transition: none; }
+    * { animation-duration: .01ms !important; }
+  }
+
+  /* Image slot — blueprint grid + crosshair */
+  .img-slot {
+    position: relative;
+    background:
+      linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px),
+      linear-gradient(135deg, #24406E, #101F3D);
+    background-size: 28px 28px, 28px 28px, 100% 100%;
+    color: rgba(255,255,255,.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    letter-spacing: .1em;
+    font-family: var(--mono);
+    overflow: hidden;
+  }
+  .img-slot::before, .img-slot::after {
+    content: "";
+    position: absolute;
+    background: rgba(255,255,255,.14);
+  }
+  .img-slot::before { width: 1px; top: 12%; bottom: 12%; left: 50%; }
+  .img-slot::after { height: 1px; left: 12%; right: 12%; top: 50%; }
+  /* A real photo, if present, covers the slot (otherwise the blueprint fallback stays) */
+  .img-slot img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+
+  /* ── Nav ── */
+  .nav {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(11,23,48,.85);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    color: #fff;
+  }
+  .nav__in { display: flex; align-items: center; gap: 30px; height: 66px; }
+  .nav__logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; letter-spacing: -.02em; }
+  .nav__logo i {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--orange), var(--orange-deep));
+    color: #fff; font-style: normal;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .nav__menu { display: flex; gap: 26px; font-size: 14px; font-weight: 600; color: rgba(255,255,255,.65); }
+  .nav__menu a:hover { color: #fff; }
+  .nav__cta {
+    margin-left: auto;
+    background: var(--orange); color: #fff;
+    font-weight: 700; font-size: 14px;
+    border: none; border-radius: 12px;
+    padding: 11px 20px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 7px;
+    box-shadow: 0 6px 20px rgba(255,107,26,.4);
+    transition: transform .15s;
+  }
+  .nav__cta:hover { transform: translateY(-1px); }
+  @media (max-width: 760px) { .nav__menu { display: none; } }
+
+  /* ── Hero: a statement on the blueprint ── */
+  .hero {
+    position: relative;
+    background:
+      radial-gradient(800px 500px at 82% -10%, rgba(255,107,26,.22), transparent 55%),
+      radial-gradient(600px 400px at 0% 100%, rgba(63,110,207,.25), transparent 55%),
+      linear-gradient(165deg, var(--navy-950), var(--navy-900) 55%, #142A55);
+    color: #fff;
+    overflow: hidden;
+  }
+  /* Blueprint grid overlay */
+  .hero::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(80% 90% at 50% 20%, #000 30%, transparent 100%);
+  }
+  /* Background photo layer — the photo is a texture, not an object.
+     Once a factory photo is ready, uncomment the img inside .hero__bg.
+     The navy overlay covers it, leaving only the mood with no color clash. */
+  .hero__bg {
+    position: absolute; inset: 0;
+    z-index: 0;
+  }
+  .hero__bg img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: .35;
+    filter: grayscale(60%) contrast(1.05);
+  }
+  .hero__bg::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(100deg, rgba(11,23,48,.96) 30%, rgba(16,31,61,.75) 70%, rgba(20,42,85,.6));
+  }
+  .hero__in {
+    position: relative;
+    z-index: 1;
+    padding: 104px 0 96px;
+  }
+  .hero__copy { max-width: 640px; }
+  .hero__eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px; font-weight: 600; letter-spacing: .14em;
+    color: #FFB380;
+    border: 1px solid rgba(255,179,128,.35);
+    border-radius: 999px;
+    padding: 6px 16px;
+    margin-bottom: 22px;
+  }
+  .hero__eyebrow i { width: 6px; height: 6px; border-radius: 50%; background: var(--orange); font-style: normal; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+  .hero h1 {
+    margin: 0 0 18px;
+    font-size: clamp(34px, 5.2vw, 58px);
+    font-weight: 800;
+    letter-spacing: -.04em;
+    line-height: 1.14;
+    text-wrap: balance;
+  }
+  .hero h1 em { font-style: normal; color: var(--orange); }
+  /* Demo: highlight the moment a chat edit is applied */
+  .hero h1.demo-flash { animation: demo-flash 1.6s ease; }
+  @keyframes demo-flash {
+    0%  { background: rgba(255,107,26,.28); border-radius: 8px; }
+    100% { background: transparent; }
+  }
+
+  /* Demo: notice popup pushed via chat — today's take on the 2015 layer popup */
+  .notice-pop {
+    position: fixed; inset: 0; z-index: 40;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(10, 18, 36, .5);
+    backdrop-filter: blur(4px);
+    opacity: 0; pointer-events: none;
+    transition: opacity .45s;
+  }
+  .notice-pop.on { opacity: 1; pointer-events: auto; }
+  .notice-pop__card {
+    width: min(460px, calc(100vw - 48px));
+    background: #fff;
+    border-radius: 22px;
+    padding: 30px 32px 24px;
+    box-shadow: 0 30px 90px rgba(6, 14, 32, .45);
+    transform: translateY(22px) scale(.94);
+    transition: transform .55s cubic-bezier(.28, 1.25, .4, 1);
+  }
+  .notice-pop.on .notice-pop__card { transform: none; }
+  .notice-pop__head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .notice-pop__badge {
+    background: var(--orange-soft); color: #B34700;
+    border: 1px solid rgba(232,100,27,.35);
+    border-radius: 999px;
+    font-size: 12px; font-weight: 800;
+    padding: 4px 12px;
+  }
+  .notice-pop__head small { font-family: var(--mono); font-size: 11px; color: #9AA7BC; letter-spacing: .08em; }
+  .notice-pop__x { margin-left: auto; border: none; background: #F1F4FA; color: #5A6A85; width: 30px; height: 30px; border-radius: 50%; font-size: 14px; cursor: pointer; }
+  .notice-pop__card h3 { margin: 0 0 10px; font-size: 22px; font-weight: 800; letter-spacing: -.02em; color: var(--navy-900); }
+  .notice-pop__dates {
+    font-size: 16px; font-weight: 700; color: #B34700;
+    background: var(--orange-soft);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin: 0 0 12px;
+    text-align: center;
+  }
+  .notice-pop__card p { margin: 0 0 18px; font-size: 14px; line-height: 1.65; color: #5A6A85; }
+  .notice-pop__foot { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #EDF1F7; padding-top: 14px; font-size: 12px; color: #9AA7BC; }
+  .hero p { margin: 0 0 14px; font-size: 17.5px; color: rgba(255,255,255,.72); max-width: 46ch; }
+  .hero__spec {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .12em;
+    color: rgba(255,255,255,.45);
+    margin: 0 0 32px;
+  }
+  .hero__btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-hero {
+    border: none; border-radius: 14px;
+    padding: 16px 28px;
+    font-size: 16px; font-weight: 700; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 9px;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .btn-hero:hover { transform: translateY(-2px); }
+  .btn-hero--primary { background: var(--orange); color: #fff; box-shadow: 0 10px 30px rgba(255,107,26,.45); }
+  .btn-hero--ghost { background: rgba(255,255,255,.08); color: #fff; border: 1px solid rgba(255,255,255,.25); backdrop-filter: blur(6px); }
+
+  /* ── Stats: oversized numbers ── */
+  .stats { background: var(--steel-50); border-bottom: 1px solid var(--line); }
+  .stats__in { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .stats__item { padding: 40px 16px 36px; text-align: center; }
+  .stats__item + .stats__item { border-left: 1px solid var(--line); }
+  .stats__item b {
+    display: block;
+    font-family: var(--mono);
+    font-size: clamp(30px, 3.6vw, 44px);
+    font-weight: 700;
+    letter-spacing: -.03em;
+    color: var(--navy-700);
+    font-variant-numeric: tabular-nums;
+  }
+  .stats__item b em { font-style: normal; color: var(--orange); font-size: .6em; vertical-align: super; }
+  .stats__item span { font-size: 13px; color: var(--muted); font-weight: 600; }
+  @media (max-width: 700px) { .stats__in { grid-template-columns: repeat(2, 1fr); } .stats__item:nth-child(3) { border-left: none; } }
+
+  /* ── Section common ── */
+  section { padding: 96px 0; }
+  .sec-eyebrow {
+    font-family: var(--mono);
+    font-size: 12px; font-weight: 600; letter-spacing: .16em;
+    color: var(--orange);
+    margin-bottom: 10px;
+  }
+  h2 { margin: 0 0 12px; font-size: clamp(26px, 3vw, 36px); font-weight: 800; letter-spacing: -.03em; }
+  .sec-sub { margin: 0 0 44px; color: var(--muted); font-size: 16px; max-width: 60ch; }
+
+  /* ── Products: spec overlay on hover ── */
+  .prods { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  @media (max-width: 960px) { .prods { grid-template-columns: repeat(2, 1fr); } }
+  .prod {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .prod:hover { transform: translateY(-6px); box-shadow: 0 24px 60px rgba(16,31,61,.16); }
+  .prod .img-slot { height: 168px; }
+  .prod__body { padding: 16px 18px 18px; }
+  .prod__code {
+    font-family: var(--mono);
+    font-size: 11.5px; font-weight: 600; letter-spacing: .08em;
+    color: var(--orange-deep);
+  }
+  .prod__name { font-size: 17px; font-weight: 800; margin: 3px 0 4px; letter-spacing: -.01em; }
+  .prod__desc { font-size: 13px; color: var(--muted); margin: 0; }
+  /* Hover spec sheet */
+  .prod__spec {
+    position: absolute; inset: auto 0 0;
+    background: linear-gradient(transparent, rgba(11,23,48,.96) 34%);
+    color: rgba(255,255,255,.55);
+    padding: 44px 18px 16px;
+    /* Only the (English) labels use mono — values keep the body font (avoids broken mono fallback) */
+    font-family: var(--mono);
+    font-size: 10.5px;
+    line-height: 2.1;
+    letter-spacing: .08em;
+    opacity: 0;
+    transform: translateY(24%);
+    transition: opacity .22s ease, transform .22s ease;
+    pointer-events: none;
+  }
+  .prod__spec b {
+    color: #fff;
+    font-weight: 600;
+    font-family: Pretendard, -apple-system, "Malgun Gothic", sans-serif;
+    font-size: 12px;
+    letter-spacing: 0;
+  }
+  .prod:hover .prod__spec { opacity: 1; transform: none; }
+  /* Demo: new-product card added via chat */
+  .prod.demo-add { animation: prod-in .65s cubic-bezier(.28,1.25,.4,1), prod-ring 2s .35s ease; }
+  @keyframes prod-in { from { opacity: 0; transform: translateY(28px) scale(.93); } to { opacity: 1; transform: none; } }
+  @keyframes prod-ring {
+    0%   { box-shadow: 0 0 0 5px rgba(232,100,27,.5), var(--shadow); }
+    100% { box-shadow: var(--shadow); }
+  }
+  .prod__new {
+    display: inline-block;
+    background: var(--orange);
+    color: #fff;
+    font-size: 10px; font-weight: 800; letter-spacing: .06em;
+    border-radius: 999px;
+    padding: 2px 8px;
+    margin-left: 6px;
+    vertical-align: 2px;
+  }
+
+  /* ── Facilities: spec sheet ── */
+  .facility { background: var(--navy-950); color: #fff; position: relative; overflow: hidden; }
+  .facility::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .facility .wrap { position: relative; }
+  .facility h2 { color: #fff; }
+  .facility .sec-sub { color: rgba(255,255,255,.55); }
+  .fac-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  .fac-table th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 11px; letter-spacing: .14em;
+    color: rgba(255,255,255,.4);
+    padding: 0 18px 12px;
+    border-bottom: 1px solid rgba(255,255,255,.15);
+  }
+  .fac-table td {
+    padding: 17px 18px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    font-variant-numeric: tabular-nums;
+  }
+  .fac-table td:first-child { font-weight: 700; font-size: 16px; }
+  .fac-table td:nth-child(3) { font-family: var(--mono); color: #FFB380; }
+  .fac-table tr:hover td { background: rgba(255,255,255,.03); }
+
+  /* ── Quote ── */
+  .quote { background: #fff; }
+  .quote__in { display: flex; gap: 64px; align-items: flex-start; }
+  @media (max-width: 960px) { .quote__in { flex-direction: column; gap: 36px; } }
+  .quote__copy { flex: 1; position: sticky; top: 96px; }
+  .quote__points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+  .quote__points li { display: flex; gap: 12px; font-size: 15.5px; align-items: baseline; }
+  .quote__points li::before {
+    content: "✓";
+    color: var(--orange);
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .quote__fax {
+    margin-top: 28px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: .06em;
+  }
+  .quote__fax s { opacity: .55; }
+  .qform {
+    flex: 1; max-width: 500px; width: 100%;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: var(--shadow);
+  }
+  .qform h3 { margin: 0 0 4px; font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
+  .qform__hint { font-size: 13.5px; color: var(--muted); margin: 0 0 20px; }
+  .qform__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+  .qform input, .qform textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 13px 15px;
+    font-family: inherit;
+    font-size: 14.5px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .qform input:focus, .qform textarea:focus {
+    outline: none;
+    border-color: var(--navy-700);
+    box-shadow: 0 0 0 4px var(--navy-100);
+  }
+  .qform .full { grid-column: 1 / -1; }
+  .qform__drop {
+    grid-column: 1 / -1;
+    border: 1.5px dashed var(--line);
+    border-radius: 12px;
+    padding: 22px;
+    text-align: center;
+    font-size: 13.5px;
+    color: var(--muted);
+    background: var(--steel-50);
+    transition: border-color .15s, background .15s;
+    cursor: pointer;
+  }
+  .qform__drop:hover { border-color: var(--orange); background: var(--orange-soft); }
+  .qform__drop b { color: var(--navy-700); }
+  .qform__drop .mono { display: block; font-size: 10.5px; letter-spacing: .08em; margin-top: 4px; }
+  .qform__submit {
+    grid-column: 1 / -1;
+    border: none;
+    border-radius: 14px;
+    background: var(--orange);
+    color: #fff;
+    font-size: 16.5px;
+    font-weight: 800;
+    padding: 17px 0;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(255,107,26,.4);
+    transition: transform .15s;
+  }
+  .qform__submit:hover { transform: translateY(-2px); }
+  .qform__foot { grid-column: 1 / -1; text-align: center; font-size: 12px; color: var(--muted); margin: 0; }
+
+  /* ── Certifications ── */
+  .certs { padding: 0 0 96px; }
+  .certs__in { display: flex; gap: 12px; flex-wrap: wrap; }
+  .cert {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 10px 20px;
+    font-size: 14px; font-weight: 600;
+    background: #fff;
+    box-shadow: var(--shadow);
+  }
+  .cert i { font-style: normal; }
+
+  /* ── Footer ── */
+  footer {
+    background: var(--navy-950);
+    color: rgba(255,255,255,.5);
+    padding: 44px 0;
+    font-size: 13px;
+    line-height: 2;
+  }
+  .foot__in { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .foot__brand { color: #fff; font-weight: 800; font-size: 17px; letter-spacing: -.01em; }
+  .foot__aiapp { font-family: var(--mono); font-size: 11px; opacity: .55; letter-spacing: .08em; }
+</style>
+</head>
+<body>
+
+<!-- ═══ Nav ═══ -->
+<nav class="nav">
+  <div class="wrap nav__in">
+    <a class="nav__logo" href="#"><i>⚙</i> OO Precision</a>
+    <div class="nav__menu">
+      <a href="#">About</a><a href="#">Products</a><a href="#">Facilities</a><a href="#">Quote</a>
+    </div>
+    <button class="nav__cta">Request a Quote →</button>
+  </div>
+</nav>
+
+<!-- Demo: notice popup pushed via chat -->
+<div id="notice-pop" class="notice-pop">
+  <div class="notice-pop__card">
+    <div class="notice-pop__head">
+      <span class="notice-pop__badge">📢 NOTICE</span>
+      <small>NOTICE · 2026.07</small>
+      <button class="notice-pop__x" aria-label="Close">✕</button>
+    </div>
+    <h3>Summer Holiday Closure</h3>
+    <div class="notice-pop__dates">Closed Aug 4 (Tue) – Aug 8 (Sat)</div>
+    <p><b>Online quotes are accepted 24/7</b> during the closure; replies resume on Mon, Aug 10.</p>
+    <div class="notice-pop__foot"><span>— OO Precision</span><span>Just posted</span></div>
+  </div>
+</div>
+
+<!-- ═══ Hero ═══ -->
+<header class="hero">
+  <!-- Once a factory photo is ready, uncomment the img below (grayscale + navy duotone overlay applied automatically) -->
+  <div class="hero__bg" aria-hidden="true">
+    <!-- <img src="factory.jpg" alt=""> -->
+  </div>
+  <div class="wrap hero__in">
+    <div class="hero__copy">
+      <span class="hero__eyebrow"><i></i>SINCE 1987 · CNC PRECISION</span>
+      <h1>Just send the drawing.<br>Get your quote <em>today</em>.</h1>
+      <p>37 years in the Sihwa Industrial Complex — precision parts, high-mix and low-volume. Skip the fax: upload a drawing and hear back within 24 hours.</p>
+      <p class="hero__spec">TOLERANCE ±0.005mm / CNC · MCT · GRINDING / 3D-CMM VERIFIED</p>
+      <div class="hero__btns">
+        <button class="btn-hero btn-hero--primary">Request a Quote →</button>
+        <button class="btn-hero btn-hero--ghost">View Products</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ Stats ═══ -->
+<div class="stats">
+  <div class="wrap stats__in">
+    <div class="stats__item rv"><b>1987</b><span>Founded</span></div>
+    <div class="stats__item rv"><b>512<em>+</em></b><span>Quotes handled</span></div>
+    <div class="stats__item rv"><b>11</b><span>Machines</span></div>
+    <div class="stats__item rv"><b>±0.005</b><span>Tolerance (mm)</span></div>
+  </div>
+</div>
+
+<!-- ═══ Products ═══ -->
+<section id="sec-products">
+  <div class="wrap">
+    <div class="sec-eyebrow rv">PRODUCTS /</div>
+    <h2 class="rv">Our Products</h2>
+    <p class="sec-sub rv">Beyond these, we handle high-mix, low-volume runs — drawing-based custom machining is what we do. Hover a card to see specs.</p>
+    <div class="prods">
+      <div class="prod rv">
+        <div class="img-slot">DP-2043<img src="img/product-01.png" alt="Precision Shaft" onerror="this.remove()"></div>
+        <div class="prod__body">
+          <span class="prod__code">DP-2043</span>
+          <div class="prod__name">Precision Shaft</div>
+          <p class="prod__desc">±0.005 precision-ground finish</p>
+        </div>
+        <div class="prod__spec">MATERIAL <b>SCM440</b><br>TOLERANCE <b>±0.005</b><br>SURFACE <b>Ground Ra0.4</b></div>
+      </div>
+      <div class="prod rv">
+        <div class="img-slot">DP-3110<img src="img/product-02.png" alt="Hydraulic Block" onerror="this.remove()"></div>
+        <div class="prod__body">
+          <span class="prod__code">DP-3110</span>
+          <div class="prod__name">Hydraulic Block</div>
+          <p class="prod__desc">Multi-port machining · pressure-tested</p>
+        </div>
+        <div class="prod__spec">MATERIAL <b>S45C</b><br>TEST <b>210 bar tested</b><br>FINISH <b>Electroless Ni</b></div>
+      </div>
+      <div class="prod rv">
+        <div class="img-slot">DP-5027<img src="img/product-03.png" alt="Fixture Jig" onerror="this.remove()"></div>
+        <div class="prod__body">
+          <span class="prod__code">DP-5027</span>
+          <div class="prod__name">Fixture Jig</div>
+          <p class="prod__desc">Patented structure (No. 10-07***)</p>
+        </div>
+        <div class="prod__spec">PATENT <b>10-07***</b><br>REPEAT <b>±0.01</b><br>BASE <b>FC300</b></div>
+      </div>
+      <div class="prod rv">
+        <div class="img-slot">DP-6088<img src="img/product-04.png" alt="Coupling Part" onerror="this.remove()"></div>
+        <div class="prod__body">
+          <span class="prod__code">DP-6088</span>
+          <div class="prod__name">Coupling Part</div>
+          <p class="prod__desc">Low-volume prototyping available</p>
+        </div>
+        <div class="prod__spec">MOQ <b>1 EA~</b><br>LEAD TIME <b>5 days~</b><br>MATERIAL <b>AL6061 / SUS304</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Facilities ═══ -->
+<section id="sec-facility" class="facility">
+  <div class="wrap">
+    <div class="sec-eyebrow rv">FACILITY /</div>
+    <h2 class="rv">Our Facilities</h2>
+    <p class="sec-sub rv">Doosan · Hwacheon · OKAMOTO — proven machines that keep your deadlines.</p>
+    <table class="fac-table rv">
+      <thead>
+        <tr><th>EQUIPMENT</th><th>SPEC</th><th>QTY</th><th>MAKER</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>CNC Lathe</td><td>8"</td><td>× 5</td><td>Doosan Infracore</td></tr>
+        <tr><td>Machining Center (MCT)</td><td>#40</td><td>× 3</td><td>Hwacheon Machinery</td></tr>
+        <tr><td>Grinder</td><td>—</td><td>× 2</td><td>OKAMOTO (JP)</td></tr>
+        <tr><td>CMM</td><td>—</td><td>× 1</td><td>Mitutoyo</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ Online Quote ═══ -->
+<section id="sec-quote" class="quote">
+  <div class="wrap quote__in">
+    <div class="quote__copy rv">
+      <div class="sec-eyebrow">ONLINE QUOTE /</div>
+      <h2>Quotes,<br>fax-free.</h2>
+      <p class="sec-sub" style="margin-bottom:28px;">No more private board posts and waiting. Upload a drawing and our team sees it right away.</p>
+      <ul class="quote__points">
+        <li>Reply within 24 business hours</li>
+        <li>Attach drawings — PDF · DWG · STEP</li>
+        <li>Quote details sent by text, too</li>
+      </ul>
+      <p class="quote__fax"><s>FAX 031-433-77**</s> → ONLINE 24H</p>
+    </div>
+    <form class="qform rv" onsubmit="return false;">
+      <h3>Request an Online Quote</h3>
+      <p class="qform__hint">Just fill in the basics — no sign-up required.</p>
+      <div class="qform__grid">
+        <input placeholder="Company" aria-label="Company">
+        <input placeholder="Contact name" aria-label="Contact name">
+        <input class="full" placeholder="Phone (000-0000-0000)" aria-label="Phone">
+        <input placeholder="Quantity (e.g. 500 EA)" aria-label="Quantity">
+        <input placeholder="Target lead time" aria-label="Target lead time">
+        <div class="qform__drop">
+          <b>Drag & drop your drawing, or click to upload</b>
+          <span class="mono">PDF / DWG / STEP · MAX 50MB</span>
+        </div>
+        <textarea class="full" rows="3" placeholder="Requirements (material, heat treatment, finish, etc.)"></textarea>
+        <button class="qform__submit">Send Quote Request →</button>
+        <p class="qform__foot">On submit, your details are stored securely and our team is notified instantly.</p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ═══ Certifications ═══ -->
+<div class="certs">
+  <div class="wrap certs__in">
+    <span class="cert rv"><i>🏅</i> ISO 9001 Quality Management</span>
+    <span class="cert rv"><i>📜</i> Patent No. 10-07***</span>
+    <span class="cert rv"><i>🏭</i> Sihwa in-house plant</span>
+    <span class="cert rv"><i>🚚</i> Nationwide delivery · same-day dispatch</span>
+  </div>
+</div>
+
+<!-- ═══ Footer ═══ -->
+<footer>
+  <div class="wrap foot__in">
+    <div>
+      <div class="foot__brand">⚙ OO Precision</div>
+      Blk 3-Na 7**, Sihwa Ind. Complex, Jeongwang-dong, Siheung, Gyeonggi, Korea<br>
+      CEO Park · Biz Reg. 134-81-*****
+    </div>
+    <div style="text-align:right;">
+      TEL 031-433-77** · oo_prec@han***.net<br>
+      ⓒ 2026 OO PRECISION.<br>
+      <span class="foot__aiapp">RENEWED WITH AIAPP ✦</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* Scroll reveal */
+  const io = new IntersectionObserver(
+    (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add("in")),
+    { threshold: 0.12 }
+  );
+  document.querySelectorAll(".rv").forEach((el) => io.observe(el));
+
+  /* Demo choreography: index.html drives auto-scroll and copy edits */
+  window.addEventListener("message", (e) => {
+    const m = e.data || {};
+    if (m.act === "toSection") {
+      const el = document.querySelector(m.sel);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    if (m.act === "top") scrollTo({ top: 0, behavior: "auto" });
+    /* Add-product scene: the new-product card appears in the grid */
+    if (m.act === "addProduct") {
+      const sec = document.getElementById("sec-products");
+      if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+      setTimeout(() => {
+        const grid = document.querySelector(".prods");
+        if (!grid || document.getElementById("prod-new")) return;
+        const el = document.createElement("div");
+        el.className = "prod demo-add";
+        el.id = "prod-new";
+        el.innerHTML = `
+          <div class="img-slot">DP-7120<img src="img/product-05.png" alt="Universal Coupling" onerror="this.remove()"></div>
+          <div class="prod__body">
+            <span class="prod__code">DP-7120<span class="prod__new">NEW</span></span>
+            <div class="prod__name">Universal Coupling</div>
+            <p class="prod__desc">Dual-yoke structure · low-volume prototyping</p>
+          </div>`;
+        grid.appendChild(el);
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 650);
+    }
+    /* Notice scene: the notice popup appears */
+    if (m.act === "notice") {
+      scrollTo({ top: 0, behavior: "smooth" });
+      const np = document.getElementById("notice-pop");
+      if (np) setTimeout(() => np.classList.add("on"), 350);
+    }
+    /* Chat-edit scene: hero copy swapped live + highlight */
+    if (m.act === "setHero") {
+      const h = document.querySelector(".hero h1");
+      if (h) {
+        h.innerHTML = m.html;
+        h.classList.remove("demo-flash");
+        void h.offsetWidth;
+        h.classList.add("demo-flash");
+      }
+      scrollTo({ top: 0, behavior: "smooth" });
+    }
+  });
+</script>
+
+</body>
+</html>

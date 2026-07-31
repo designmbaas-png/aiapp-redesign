@@ -12,6 +12,15 @@ AiApp(aiapp.help) 서비스 리디자인 High-Fidelity 시안입니다.
 | `pricing.html` | 요금제 | 플랜 5종 · 월/연 토글 · 기능 비교표 · FAQ |
 | `blog.html` | 블로그 | AI 인사이트 · 카테고리 탭 · 카드 그리드 |
 | `notice.html` | 공지 | 공지/뉴스 12건 · 카테고리 탭 · 정렬 |
+| `etl/` | **ETL 재생 엔진** (CES) | React(Vite) 빌드 산출물 · KR/EN 토글(`?lang=en`) · 소스는 `app/` |
+
+## React 점진 전환 (app/)
+
+CES 대비 ETL 랜딩부터 React(Vite + TypeScript)로 전환을 시작했습니다.
+
+- 소스: [app/](app/) — 개발·빌드 방법은 [app/README.md](app/README.md) 참고
+- `app`에서 `npm run build` 하면 루트 `etl/`로 출력되어 기존 정적 페이지와 함께 배포됩니다
+- 기존 5개 페이지는 순차적으로 React로 이전 예정 (디자인 시스템은 `app/src/styles/design-system.css`로 이식 완료)
 
 ## 보는 방법
 
