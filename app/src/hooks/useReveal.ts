@@ -7,6 +7,11 @@ import { useEffect } from 'react'
 export function useRevealObserver() {
   useEffect(() => {
     const els = document.querySelectorAll('.reveal, .stagger')
+    // 옵저버를 못 쓰는 환경에서는 애니메이션 없이 즉시 노출 — 콘텐츠가 opacity:0으로 남는 일 방지
+    if (!('IntersectionObserver' in window)) {
+      els.forEach((el) => el.classList.add('on'))
+      return
+    }
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {

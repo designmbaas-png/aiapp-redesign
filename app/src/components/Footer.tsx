@@ -53,11 +53,16 @@ export function Footer() {
           </div>
           {GROUPS.map((g, i) => (
             <div key={g.ko} className={openGroup === i ? 'open' : undefined}>
-              <h6
-                className={`foot-toggle${openGroup === i ? ' open' : ''}`}
-                onClick={() => setOpenGroup(openGroup === i ? null : i)}
-              >
-                {t(g.ko, g.en)}
+              {/* 모바일 아코디언 토글 — 키보드 접근을 위해 h6 안에 실제 button 배치 */}
+              <h6>
+                <button
+                  type="button"
+                  className={`foot-toggle${openGroup === i ? ' open' : ''}`}
+                  aria-expanded={openGroup === i}
+                  onClick={() => setOpenGroup(openGroup === i ? null : i)}
+                >
+                  {t(g.ko, g.en)}
+                </button>
               </h6>
               {g.links.map((l) => (
                 <a
@@ -74,24 +79,29 @@ export function Footer() {
         </div>
         <div className="biz">
           <p className="biz-line">
-            <span>본사. 부산광역시 금정구 부산대학로50번길 68, 4층 404호(장전동, 피엔유에이벡)</span>
-            <span>연구소. 부산광역시 연제구 연제로 24, 206호</span>
+            <span>
+              {t(
+                '본사. 부산광역시 금정구 부산대학로50번길 68, 4층 404호(장전동, 피엔유에이벡)',
+                'HQ. #404, 4F, 68 Busandaehak-ro 50beon-gil, Geumjeong-gu, Busan, Republic of Korea',
+              )}
+            </span>
+            <span>{t('연구소. 부산광역시 연제구 연제로 24, 206호', 'R&D Center. #206, 24 Yeonje-ro, Yeonje-gu, Busan, Republic of Korea')}</span>
           </p>
           <p className="biz-line">
-            <span>상호명. (주)엠바스</span>
-            <span>CEO. 김정현</span>
+            <span>{t('상호명. (주)엠바스', 'Company. mBaaS Co., Ltd.')}</span>
+            <span>{t('CEO. 김정현', 'CEO. Kim Jeong-hyun')}</span>
             <span>E-mail. help@aiapp.help</span>
-            <span>연락처. 070-8648-2750</span>
-            <span>사업자 번호. 128-88-02089</span>
+            <span>{t('연락처. 070-8648-2750', 'Tel. +82-70-8648-2750')}</span>
+            <span>{t('사업자 번호. 128-88-02089', 'Business registration no. 128-88-02089')}</span>
           </p>
           <p className="biz-line">
             <span>
-              통신판매업신고번호. 제2026-부산금정-0312호
+              {t('통신판매업신고번호. 제2026-부산금정-0312호', 'E-commerce permit no. 2026-Busan-Geumjeong-0312')}
               <a className="biz-check" href="https://www.ftc.go.kr/bizCommPop.do?wrkr_no=1288802089" target="_blank" rel="noopener">
-                사업자정보확인
+                {t('사업자정보확인', 'Verify business info')}
               </a>
             </span>
-            <span>통신판매중개업자. 주식회사 엠바스</span>
+            <span>{t('통신판매중개업자. 주식회사 엠바스', 'E-commerce intermediary. mBaaS Co., Ltd.')}</span>
           </p>
           <p className="biz-copy">COPYRIGHT(c) 2025 AIAPP. All rights reserved.</p>
         </div>

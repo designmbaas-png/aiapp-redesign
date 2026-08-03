@@ -8,6 +8,11 @@ function Counter({ target }: { target: number }) {
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    // 모션 최소화 설정 사용자에게는 카운트업 없이 최종 값 즉시 표시
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setVal(target)
+      return
+    }
     const io = new IntersectionObserver(
       ([e]) => {
         if (!e.isIntersecting) return

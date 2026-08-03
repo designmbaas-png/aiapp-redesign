@@ -55,6 +55,40 @@ export function Compare() {
       c: <b>{t('MCP 멀티에이전트 병렬', 'MCP multi-agent, parallel')}</b>,
     },
   ]
+  /* 모바일 2열 표용 압축 데이터 — 경쟁 2군을 '기존 도구' 한 열로 합치고 라벨·값을 짧게 */
+  const duoRows: { label: ReactNode; etc: ReactNode; ai: ReactNode }[] = [
+    {
+      label: t('시작점', 'Starting point'),
+      etc: t('빈 캔버스·프롬프트', 'Blank canvas / prompt'),
+      ai: t('기존 라이브 서비스', 'Your live service'),
+    },
+    {
+      label: t('기존 서비스 진단', 'Diagnosis'),
+      etc: X,
+      ai: <>{O} {t('작업 전 리포트', 'pre-work report')}</>,
+    },
+    {
+      label: t('원본 보존', 'Original preserved'),
+      etc: X,
+      ai: O,
+    },
+    {
+      label: t('결과물', 'What you get'),
+      etc: t('새 사이트·정적물', 'New site / static'),
+      ai: t('상용 운영 서비스', 'Operable service'),
+    },
+    {
+      label: t('결제·회원·예약', 'Payments, members'),
+      etc: t('별도 연동·미지원', 'Separate / none'),
+      ai: <>{O} {t('내장 BaaS', 'built-in BaaS')}</>,
+    },
+    {
+      label: t('생성 구조', 'Generation'),
+      etc: t('수동·단일 모델', 'Manual / single model'),
+      ai: t('멀티에이전트 병렬', 'Multi-agent, parallel'),
+    },
+  ]
+
   return (
     <section className="section etl-compare" id="compare">
       <div className="wrap">
@@ -62,6 +96,7 @@ export function Compare() {
           <p className="eyebrow reveal">WHY DIFFERENT</p>
           <h2 className="h2 reveal">{t('기존 도구와 무엇이 다른가', 'How it differs from existing tools')}</h2>
         </div>
+        {/* 데스크톱: 표 그대로 / 모바일(≤760): 항목별 카드 스택으로 전환 (CSS로 상호 배타 노출) */}
         <div className="cmp-scroll reveal">
           <table className="cmp-table">
             <thead>
@@ -83,6 +118,34 @@ export function Compare() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* 모바일 전용(≤760): 경쟁 2군을 '기존 도구' 한 열로 압축한 2열 표 —
+            가로 스크롤 없이 항목 6개가 한 화면에서 좌우 대비되도록 */}
+        <div className="cmp-duo-wrap reveal">
+          <div className="cmp-duo-card">
+            <table className="cmp-duo">
+              <thead>
+                <tr>
+                  <th />
+                  <th>{t('기존 도구*', 'Existing tools*')}</th>
+                  <th className="hl">AiApp</th>
+                </tr>
+              </thead>
+              <tbody>
+                {duoRows.map((r, i) => (
+                  <tr key={i}>
+                    <th>{r.label}</th>
+                    <td className="etc">{r.etc}</td>
+                    <td className="hl">{r.ai}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="cmp-duo-note">
+            * {t('템플릿 노코드·웹빌더, AI 프롬프트→앱 생성기', 'Template no-code builders, AI prompt-to-app generators')}
+          </p>
         </div>
         <p className="cmp-punch reveal">
           {t(

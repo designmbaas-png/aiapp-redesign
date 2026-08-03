@@ -44,6 +44,19 @@ export function Demo() {
 
   const src = `${lang === 'ko' ? './demo/index.html' : './demo/index_en.html'}?v=${DEMO_VERSION}`
 
+  // 모바일에서 1280px 데모가 ~0.28배까지 줄어 판독이 어려움 → 전체 화면 진입 경로를 강조.
+  // iPhone Safari처럼 요소 전체 화면을 지원하지 않는 환경에서는 버튼 자체를 숨긴다
+  const fullscreenSupported =
+    typeof document !== 'undefined' && (document.fullscreenEnabled || 'webkitFullscreenEnabled' in document)
+
+  const toggleFullscreen = () => {
+    const el = shellRef.current as (HTMLDivElement & { webkitRequestFullscreen?: () => void }) | null
+    if (!el) return
+    if (document.fullscreenElement) document.exitFullscreen()
+    else if (el.requestFullscreen) el.requestFullscreen()
+    else el.webkitRequestFullscreen?.()
+  }
+
   const steps = [
     {
       no: '01',
@@ -92,6 +105,11 @@ export function Demo() {
                 {t('스크롤하면 데모가 시작됩니다', 'Demo starts when scrolled into view')}
               </div>
             )}
+            {started && fullscreenSupported && (
+              <button className="demo-zoom-btn" type="button" onClick={toggleFullscreen}>
+                ⛶ {t('크게 보기', 'View larger')}
+              </button>
+            )}
           </div>
           <div className="demo-bar">
             {started && (
@@ -114,15 +132,7 @@ export function Demo() {
               >
                 ↺ {t('처음부터', 'Replay')}
               </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const el = shellRef.current
-                  if (!el) return
-                  if (document.fullscreenElement) document.exitFullscreen()
-                  else el.requestFullscreen?.()
-                }}
-              >
+              <button type="button" onClick={toggleFullscreen}>
                 ⛶ {t('전체 화면', 'Fullscreen')}
               </button>
             </span>
