@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OO Precision Co., Ltd. - Welcome to our homepage.</title>
+<!-- ============================================================
+     [영상 데모용 Before 화면 — B2B]
+     의도적으로 2000년대 중소 제조업체 스타일로 제작한 "좀비 웹사이트".
+     table 레이아웃 / font 태그 / 깨진 Flash 배너 / 레이어 팝업 등
+     당대 기법을 일부러 사용했음. 디자인 시스템 미적용 (의도).
+     ============================================================ -->
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, "Helvetica Neue", Verdana, sans-serif;
+    font-size: 12px;
+    color: #333333;
+    background: #D6DCE5;
+  }
+  a { color: #1F3A6E; }
+  a:visited { color: #551A8B; }
+  .blink { animation: blink .8s step-start infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .gnb-old td {
+    background: linear-gradient(#3D5A96, #1F3A6E);
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    padding: 7px 0;
+    border-right: 1px solid #16294F;
+    cursor: pointer;
+  }
+  .gnb-old td:hover { background: linear-gradient(#4E6FB0, #2A4A85); }
+  .stitle {
+    background: url() #EEF1F7;
+    border-left: 4px solid #1F3A6E;
+    border-bottom: 1px solid #C5CBDA;
+    padding: 5px 8px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #1F3A6E;
+    margin: 16px 0 8px;
+  }
+  .photo {
+    background: #EFEFEF;
+    border: 1px solid #999999;
+    color: #999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 11px;
+    gap: 3px;
+  }
+  .photo b { font-size: 17px; color: #BBBBBB; }
+  table.board td { border-bottom: 1px solid #DDDDDD; padding: 5px 6px; }
+  .new { color: #FF0000; font-size: 10px; font-weight: bold; }
+  .side-box { border: 1px solid #B9C2D4; background: #FFFFFF; margin-bottom: 8px; }
+  .side-box .tit { background: linear-gradient(#F4F6FA, #DDE3EF); border-bottom: 1px solid #B9C2D4; padding: 4px 8px; font-weight: bold; font-size: 11px; color: #1F3A6E; }
+  .side-box .bd { padding: 8px; font-size: 11px; line-height: 1.7; }
+</style>
+</head>
+<body>
+<center>
+
+<!-- ═══ 레이어 팝업 (2015년부터 떠 있는) ═══ -->
+<div id="popup" style="position:absolute; top:90px; left:50%; margin-left:120px; width:260px; background:#FFFFFF; border:2px solid #1F3A6E; z-index:99; text-align:left;">
+  <div style="background:linear-gradient(#3D5A96,#1F3A6E); color:#FFF; font-weight:bold; font-size:12px; padding:5px 8px;">Notice</div>
+  <div style="padding:12px 10px; font-size:12px; line-height:1.8;">
+    <font color="#1F3A6E"><b>■ Website Renewal Notice</b></font><br>
+    To serve you better,<br>
+    our website <font color="#FF0000"><b>renewal is in progress</b></font>.<br>
+    We apologize for any inconvenience.<br>
+    <font color="#888888">- Mar 2015, Admin -</font>
+  </div>
+  <div style="background:#EEF1F7; border-top:1px solid #C5CBDA; padding:4px 8px; font-size:11px; text-align:right;">
+    <label><input type="checkbox" style="vertical-align:middle;"> Don't show today</label>
+    &nbsp;<a href="#" onclick="document.getElementById('popup').style.display='none'; return false;"><b>[Close]</b></a>
+  </div>
+</div>
+
+<!-- 전체 프레임: 900px 고정 테이블 -->
+<table width="900" cellpadding="0" cellspacing="0" style="background:#FFFFFF; border:1px solid #8895AC; margin-top:8px;">
+
+  <!-- ═══ 헤더 ═══ -->
+  <tr>
+    <td style="padding:10px 14px; border-bottom:1px solid #C5CBDA;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td width="54">
+            <div style="width:44px; height:44px; background:linear-gradient(135deg,#1F3A6E,#3D5A96); color:#FFF; font-size:22px; font-weight:bold; text-align:center; line-height:44px;">⚙</div>
+          </td>
+          <td>
+            <span style="font-size:22px; font-weight:bold; color:#1F3A6E; letter-spacing:-1px;">OO Precision</span><br>
+            <span style="font-size:10px; color:#8895AC; font-family:Verdana, sans-serif;">OO PRECISION IND. CO.,LTD.</span>
+          </td>
+          <td align="right" style="font-size:11px; color:#555555; line-height:1.7;">
+            <font color="#1F3A6E"><b>Masters of precision machining — competing on technology</b></font><br>
+            TEL: 031-433-77** | FAX: 031-433-77**<br>
+            <span style="font-family:'Courier New', monospace;">TODAY <font color="#FF0000"><b>7</b></font> / TOTAL <font color="#0000FF"><b>127,483</b></font></span>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- ═══ 메인 메뉴 ═══ -->
+  <tr>
+    <td>
+      <table class="gnb-old" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td width="16%">About</td>
+          <td width="17%">Business</td>
+          <td width="17%">Products</td>
+          <td width="17%">Facilities</td>
+          <td width="17%">Quote</td>
+          <td width="16%">Location</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- ═══ 깨진 플래시 메인 배너 ═══ -->
+  <tr>
+    <td style="border-bottom:1px solid #C5CBDA;">
+      <div id="flash-banner" style="height:150px; background:#F4F4F4; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:6px; color:#888888;">
+        <span style="font-size:30px;">🧩</span>
+        <span style="font-size:12px;"><b>Adobe Flash Player</b> has been blocked.</span>
+        <span style="font-size:11px; color:#AAAAAA;">main_banner_2008.swf (900×150) — Enable the plugin to view this content.</span>
+      </div>
+    </td>
+  </tr>
+
+  <!-- ═══ 본문 ═══ -->
+  <tr>
+    <td style="padding:10px;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+
+          <!-- 좌측 사이드 -->
+          <td width="180" valign="top" style="padding-right:10px;">
+            <div class="side-box" style="border:2px solid #E8641B;">
+              <div class="tit" style="background:linear-gradient(#FDEFE3,#F7D9BE); color:#B34700; border-bottom:1px solid #E8B98C;">☎ Quote Inquiry</div>
+              <div class="bd" style="text-align:center;">
+                <span style="font-size:15px; font-weight:bold; color:#E8641B;">031-433-77**</span><br>
+                <span class="blink" style="color:#FF0000; font-weight:bold;">FAX quotes welcome!!</span><br>
+                <font color="#888888">Weekdays 08:30–17:30<br>(Closed Sat/Sun/holidays)</font>
+              </div>
+            </div>
+            <div class="side-box">
+              <div class="tit">Certifications</div>
+              <div class="bd">
+                <div style="border:1px solid #CCCCCC; text-align:center; padding:5px; margin-bottom:4px;">ISO 9001:2000<br><font color="#999999">Quality Mgmt System</font></div>
+                <div style="border:1px solid #CCCCCC; text-align:center; padding:5px; margin-bottom:4px;">Venture Business Cert.<br><font color="#999999">(2006, expired)</font></div>
+                <div style="border:1px solid #CCCCCC; text-align:center; padding:5px;">Patent 10-07***<br><font color="#999999">Precision jig structure</font></div>
+              </div>
+            </div>
+            <div class="side-box">
+              <div class="tit">Quick Links</div>
+              <div class="bd">
+                ▶ <a href="#">Company catalog.pdf (2009)</a><br>
+                ▶ <a href="#">Location map.hwp</a><br>
+                ▶ <a href="#">Business license copy</a>
+              </div>
+            </div>
+          </td>
+
+          <!-- 우측 콘텐츠 -->
+          <td valign="top">
+
+            <!-- CEO 인사말 -->
+            <div class="stitle">■ CEO's Message</div>
+            <table width="100%" cellpadding="4" cellspacing="0">
+              <tr>
+                <td width="120" valign="top">
+                  <div class="photo" style="width:110px; height:140px;"><b>⌧</b>CEO</div>
+                </td>
+                <td valign="top" style="font-size:12px; line-height:1.9;">
+                  Hello. I am <b>Mr. Park</b>, CEO of OO Precision.<br>
+                  <font color="#1F3A6E"><b>Since our founding in 1987</b></font>, OO Precision has walked a single path of precision machining as
+                  a CNC precision-parts specialist. Placing customer satisfaction as our highest value,
+                  we will repay your trust with <font color="#1F3A6E"><b>top quality and on-time delivery</b></font>.<br>
+                  Through relentless technical development and quality innovation, we will keep growing
+                  together with our customers. Thank you.<br>
+                  <div align="right" style="margin-top:6px;">Sincerely, <b>CEO Park</b></div>
+                </td>
+              </tr>
+            </table>
+
+            <!-- 주요 제품 -->
+            <div class="stitle">■ Our Products</div>
+            <table id="products-old" width="100%" cellpadding="4" cellspacing="0">
+              <tr>
+                <td width="25%" align="center">
+                  <div class="photo" style="width:130px; height:95px; margin:0 auto;"><b>⌧</b>No image</div>
+                  <b>Precision Shaft</b><br><font color="#888888" size="1">Part No. DP-2043</font>
+                </td>
+                <td width="25%" align="center">
+                  <div class="photo" style="width:130px; height:95px; margin:0 auto;"><b>⌧</b>No image</div>
+                  <b>Hydraulic Block</b><br><font color="#888888" size="1">Part No. DP-3110</font>
+                </td>
+                <td width="25%" align="center">
+                  <div class="photo" style="width:130px; height:95px; margin:0 auto;"><b>⌧</b>No image</div>
+                  <b>Fixture Jig</b><br><font color="#888888" size="1">Part No. DP-5027</font>
+                </td>
+                <td width="25%" align="center">
+                  <div class="photo" style="width:130px; height:95px; margin:0 auto;"><b>⌧</b>No image</div>
+                  <b>Coupling Part</b><br><font color="#888888" size="1">Part No. DP-6088</font>
+                </td>
+              </tr>
+            </table>
+            <div style="font-size:11px; color:#888888; margin-top:2px;">※ High-mix, low-volume production also available. Please visit with your drawings or send them by FAX.</div>
+
+            <!-- 설비 현황 -->
+            <div class="stitle">■ Facilities <font size="1" color="#999999">(as of Feb 2013)</font></div>
+            <table width="100%" cellpadding="5" cellspacing="1" style="background:#8895AC; font-size:12px;">
+              <tr style="background:#DDE3EF; text-align:center; font-weight:bold;">
+                <td>Equipment</td><td>Spec</td><td>Qty</td><td>Maker</td>
+              </tr>
+              <tr style="background:#FFFFFF; text-align:center;">
+                <td>CNC Lathe</td><td>8"</td><td>5</td><td>Doosan Infracore</td>
+              </tr>
+              <tr style="background:#FFFFFF; text-align:center;">
+                <td>Machining Center (MCT)</td><td>#40</td><td>3</td><td>Hwacheon Machinery</td>
+              </tr>
+              <tr style="background:#FFFFFF; text-align:center;">
+                <td>Grinder</td><td>-</td><td>2</td><td>OKAMOTO (Japan)</td>
+              </tr>
+              <tr style="background:#FFFFFF; text-align:center;">
+                <td>CMM</td><td>-</td><td>1</td><td>Mitutoyo</td>
+              </tr>
+            </table>
+
+            <!-- 견적문의 게시판 -->
+            <div class="stitle">■ Quote Inquiry Board <font size="1" color="#999999">(Please send quotes by FAX or leave them on the board)</font></div>
+            <table id="board-old" class="board" width="100%" cellpadding="0" cellspacing="0" style="font-size:12px; border-top:2px solid #1F3A6E;">
+              <tr style="background:#EEF1F7; text-align:center; font-weight:bold;">
+                <td width="8%">No.</td><td>Subject</td><td width="14%">Author</td><td width="16%">Date</td><td width="8%">Views</td>
+              </tr>
+              <tr>
+                <td align="center">514</td>
+                <td>🔒 [Private] Quote request: Shaft 500 EA <span class="new">N</span></td>
+                <td align="center">Hanbit Tech</td><td align="center">2026-07-14</td><td align="center">1</td>
+              </tr>
+              <tr>
+                <td align="center">513</td>
+                <td>🔒 [Private] Hydraulic block 20 EA — lead time inquiry</td>
+                <td align="center">Mr. Park</td><td align="center">2026-06-30</td><td align="center">2</td>
+              </tr>
+              <tr>
+                <td align="center">512</td>
+                <td>Can you prototype a jig? Still no reply;;</td>
+                <td align="center">Mgr. Lee</td><td align="center">2026-05-12</td><td align="center">31</td>
+              </tr>
+              <tr>
+                <td align="center">509</td>
+                <td><font color="#CC00CC">★CLEARANCE★ Buy/sell used machine tools 010-XXXX</font></td>
+                <td align="center">MachineWorld</td><td align="center">2014-09-02</td><td align="center">214</td>
+              </tr>
+              <tr>
+                <td align="center">508</td>
+                <td>Lead time inquiry (urgent!!) <font color="#888888">┗ [Answered]</font></td>
+                <td align="center">Mr. Kim</td><td align="center">2014-08-11</td><td align="center">48</td>
+              </tr>
+            </table>
+            <div align="right" style="margin-top:4px; font-size:11px;">
+              <span style="border:2px outset #E0E0E0; background:linear-gradient(#FDFDFD,#D8D8D8); padding:3px 12px; cursor:pointer;"><b>Write</b></span>
+              <span style="border:2px outset #E0E0E0; background:linear-gradient(#FDFDFD,#D8D8D8); padding:3px 12px; cursor:pointer;"><b>List</b></span>
+            </div>
+
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- ═══ 푸터 ═══ -->
+  <tr>
+    <td style="background:#1F3A6E; text-align:center; padding:12px; font-size:11px; color:#B9C2D4; line-height:1.9;">
+      Blk 3-Na 7**, Sihwa Ind. Complex, Jeongwang-dong, Siheung, Gyeonggi, Korea | CEO: Park | Biz Reg. No.: 134-81-***** <br>
+      TEL: 031-433-77** | FAX: 031-433-77** | E-mail: oo_prec@han***.net<br>
+      Copyright ⓒ 2003 OO PRECISION. All rights reserved. &nbsp;<a href="#" style="color:#8FA3C8;">[Admin Login]</a><br>
+      <font color="#5F729B">This site is optimized for Internet Explorer 7.0 / 1024×768. | Last Update: 2014.11.20</font>
+    </td>
+  </tr>
+</table>
+
+<div style="font-size:11px; color:#666666; margin:8px 0 20px;">▲ TOP</div>
+
+</center>
+
+<!-- ═══ 데모 연출 모듈 (index.html에서 postMessage로 조종) ═══ -->
+<div id="demo-spot" style="position:fixed; opacity:0; z-index:9998; border:3px solid #FF3B30; border-radius:10px; box-shadow:0 0 0 9999px rgba(11,23,48,.62); transition:opacity .35s ease; pointer-events:none;"></div>
+<div id="demo-note" style="position:fixed; opacity:0; z-index:9999; max-width:400px; background:#FFFFFF; border-radius:14px; padding:16px 20px; font-family:Pretendard,'Malgun Gothic',sans-serif; box-shadow:0 18px 50px rgba(0,0,0,.45); transition:opacity .35s ease; pointer-events:none;">
+  <div id="demo-note-t" style="font-size:17px; font-weight:800; color:#1E2635; line-height:1.4;"></div>
+  <div id="demo-note-d" style="font-size:14px; color:#4A5468; margin-top:5px; line-height:1.55;"></div>
+</div>
+<script>
+(function () {
+  var spot = document.getElementById("demo-spot");
+  var note = document.getElementById("demo-note");
+  var settleTimer = null;
+
+  function hideOverlay() {
+    spot.style.opacity = "0";
+    note.style.opacity = "0";
+  }
+
+  /* 스크롤이 완전히 멈춘 뒤 콜백 (90ms 간격 위치 비교, 최대 1.6s 대기) */
+  function waitScrollSettle(cb) {
+    clearTimeout(settleTimer);
+    var last = -1, waited = 0;
+    (function check() {
+      if (scrollY === last || waited > 1600) { cb(); return; }
+      last = scrollY;
+      waited += 90;
+      settleTimer = setTimeout(check, 90);
+    })();
+  }
+
+  window.addEventListener("message", function (e) {
+    var m = e.data || {};
+    if (m.act === "focus") {
+      var el = document.querySelector(m.sel);
+      if (!el) return;
+      /* ① 이전 스포트라이트를 먼저 끄고 → ② 스크롤 → ③ 멈추면 제자리에서 페이드인 */
+      hideOverlay();
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      waitScrollSettle(function () {
+        var r = el.getBoundingClientRect();
+        spot.style.left = (r.left - 8) + "px";
+        spot.style.top = (r.top - 8) + "px";
+        spot.style.width = (r.width + 16) + "px";
+        spot.style.height = (r.height + 16) + "px";
+        spot.style.borderColor = m.tone === "warn" ? "#FF9500" : "#FF3B30";
+        document.getElementById("demo-note-t").innerHTML = m.title || "";
+        document.getElementById("demo-note-d").innerHTML = m.desc || "";
+        note.style.left = Math.max(16, Math.min(innerWidth - 430, r.left)) + "px";
+        note.style.top = (r.bottom + 130 < innerHeight ? r.bottom + 16 : Math.max(16, r.top - 118)) + "px";
+        spot.style.opacity = "1";
+        note.style.opacity = "1";
+      });
+    }
+    if (m.act === "clear") { clearTimeout(settleTimer); hideOverlay(); }
+    if (m.act === "top") { clearTimeout(settleTimer); hideOverlay(); scrollTo({ top: 0, behavior: "smooth" }); }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3단계 동작 원리 — 시안 4종 (P1~P4)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --paper:#F7F9FC; --surface:#fff; --ink:#0E1626; --muted:#5B6577; --faint:#8B94A6;
+  --accent:#2B5CE6; --accent-deep:#1E43B8; --mint:#5CDBB4; --navy:#0A1836; --line:#E4E9F2;
+  --font:"Pretendard Variable",Pretendard,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:#DDE3EC;color:var(--ink);-webkit-font-smoothing:antialiased;word-break:keep-all;}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px;}
+.tag{max-width:1160px;margin:56px auto 14px;padding:0 24px;font-size:15px;font-weight:800;color:#39415a;}
+.tag b{display:inline-block;background:var(--ink);color:#fff;border-radius:8px;padding:4px 12px;margin-right:10px;font-size:13px;}
+.mock{background:var(--surface);padding:96px 0;overflow:hidden;}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);}
+.h2{font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1.3;}
+.sub{font-size:15px;color:var(--muted);margin-top:12px;}
+.center{text-align:center;}
+
+/* ═══ 시안 P1 — 넘버 타임라인 (수직 라인 + 노드) ═══ */
+.p1-tl{position:relative;max-width:760px;margin:70px auto 0;padding-left:74px;}
+.p1-tl::before{content:"";position:absolute;left:26px;top:8px;bottom:8px;width:3px;border-radius:99px;background:linear-gradient(180deg,var(--accent),var(--mint));}
+.p1-item{position:relative;padding:0 0 44px;}
+.p1-item:last-child{padding-bottom:0;}
+.p1-node{position:absolute;left:-74px;top:0;width:52px;height:52px;border-radius:16px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;box-shadow:0 10px 24px -8px rgba(10,24,54,.45);}
+.p1-item:nth-child(2) .p1-node{background:var(--accent);}
+.p1-item:nth-child(3) .p1-node{background:#0F8A66;}
+.p1-card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:26px 28px;}
+.p1-step{font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--accent);}
+.p1-card h3{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-top:6px;}
+.p1-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+.p1-chip{font-size:12px;font-weight:700;color:var(--accent-deep);background:#fff;border:1px solid rgba(43,92,230,.3);border-radius:999px;padding:6px 13px;}
+.p1-note{margin-top:14px;font-size:13px;color:var(--muted);line-height:1.7;}
+
+/* ═══ 시안 P2 — 고스트 넘버 3컬럼 ═══ */
+.mock-p2{background:var(--paper);}
+.p2-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:64px;}
+.p2-card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:120px 28px 30px;overflow:hidden;box-shadow:0 18px 44px -28px rgba(10,24,54,.25);}
+.p2-ghost{position:absolute;top:-34px;right:6px;font-size:170px;font-weight:800;letter-spacing:-.06em;line-height:1;color:transparent;-webkit-text-stroke:2px #E3EAF6;pointer-events:none;}
+.p2-card.hl .p2-ghost{-webkit-text-stroke:2px rgba(43,92,230,.28);}
+.p2-mono{position:absolute;top:28px;left:28px;width:46px;height:46px;border-radius:14px;background:var(--navy);color:var(--mint);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;}
+.p2-card h3{position:relative;font-size:19px;font-weight:800;letter-spacing:-.02em;}
+.p2-card h4{position:relative;font-size:13px;font-weight:700;color:var(--accent);margin-top:4px;}
+.p2-list{position:relative;list-style:none;margin-top:16px;display:grid;gap:8px;}
+.p2-list li{font-size:13px;color:var(--muted);line-height:1.65;padding-left:18px;position:relative;}
+.p2-list li::before{content:"";position:absolute;left:0;top:8px;width:8px;height:8px;border-radius:3px;background:var(--mint);}
+
+/* ═══ 시안 P3 — 다크 스텝 쇼케이스 (좌 리스트 · 우 패널) ═══ */
+.mock-p3{background:var(--navy);position:relative;}
+.mock-p3::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 300px at 80% 20%,rgba(43,92,230,.35),transparent 70%);}
+.mock-p3 .wrap{position:relative;}
+.mock-p3 .eyebrow{color:var(--mint);}
+.mock-p3 .h2{color:#fff;}
+.mock-p3 .sub{color:rgba(255,255,255,.7);}
+.p3-body{display:grid;grid-template-columns:340px 1fr;gap:48px;margin-top:60px;align-items:stretch;}
+.p3-nav{display:flex;flex-direction:column;gap:6px;}
+.p3-navitem{border-radius:14px;padding:18px 20px;border:1px solid transparent;}
+.p3-navitem.on{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.16);}
+.p3-navitem .no{font-size:11px;font-weight:800;letter-spacing:.14em;color:rgba(255,255,255,.45);}
+.p3-navitem.on .no{color:var(--mint);}
+.p3-navitem h3{font-size:17px;font-weight:800;color:rgba(255,255,255,.55);margin-top:4px;}
+.p3-navitem.on h3{color:#fff;}
+.p3-navitem p{display:none;font-size:12.5px;color:rgba(255,255,255,.6);margin-top:8px;line-height:1.65;}
+.p3-navitem.on p{display:block;}
+.p3-bar{height:3px;border-radius:99px;background:rgba(255,255,255,.12);margin-top:14px;overflow:hidden;}
+.p3-bar i{display:block;height:100%;width:38%;background:linear-gradient(90deg,var(--accent),var(--mint));}
+.p3-panel{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);border-radius:20px;padding:34px;display:flex;flex-direction:column;justify-content:center;gap:22px;}
+.p3-flow{display:flex;align-items:center;justify-content:center;gap:12px;}
+.p3-box{font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:14px 18px;font-variant-numeric:tabular-nums;}
+.p3-box.hl{background:var(--accent);border-color:var(--accent);box-shadow:0 12px 30px -10px rgba(43,92,230,.7);}
+.p3-arrow{color:var(--mint);font-weight:800;}
+.p3-cap{text-align:center;font-size:12.5px;color:rgba(255,255,255,.55);}
+
+/* ═══ 시안 P4 — 파이프라인 플로우 (그라디언트 커넥터) ═══ */
+.p4-flow{display:flex;align-items:stretch;margin-top:70px;}
+.p4-stage{flex:1;position:relative;background:var(--paper);border:1.5px solid var(--line);border-radius:20px;padding:28px 26px;z-index:1;}
+.p4-stage.s2{border-color:rgba(43,92,230,.4);background:linear-gradient(180deg,rgba(43,92,230,.05),var(--paper));}
+.p4-link{flex:none;width:64px;display:flex;align-items:center;position:relative;}
+.p4-link::before{content:"";position:absolute;left:-6px;right:-6px;top:50%;height:10px;transform:translateY(-50%);border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--mint));opacity:.85;}
+.p4-link::after{content:"";position:absolute;left:50%;top:50%;width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--accent);transform:translate(-50%,-50%);}
+.p4-letter{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent-deep));}
+.p4-stage.s3 .p4-letter{background:linear-gradient(135deg,var(--mint),#2FA98A);}
+.p4-stage h3{font-size:17.5px;font-weight:800;letter-spacing:-.02em;margin-top:14px;}
+.p4-stage h4{font-size:12.5px;font-weight:700;color:var(--accent);margin-top:3px;}
+.p4-kw{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;}
+.p4-kw span{font-family:ui-monospace,monospace;font-size:10.5px;font-weight:700;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:7px;padding:4px 9px;}
+.p4-io{display:flex;justify-content:space-between;max-width:1000px;margin:26px auto 0;font-size:12px;font-weight:700;color:var(--faint);}
+.p4-io b{color:var(--ink);}
+</style>
+</head>
+<body>
+
+<div class="tag"><b>시안 P1</b>넘버 타임라인 — 수직 그라디언트 라인 + 노드, 스크롤 따라 라인이 차오르는 연출 (프로덕트 문법)</div>
+<section class="mock">
+  <div class="wrap">
+    <div class="center">
+      <p class="eyebrow">HOW IT WORKS</p>
+      <h2 class="h2" style="margin-top:12px;">3단계 동작 원리</h2>
+      <p class="sub">빈 화면에서 새로 만드는 것이 아니라, 있는 것을 읽어서 다시 살립니다.</p>
+    </div>
+    <div class="p1-tl">
+      <div class="p1-item">
+        <span class="p1-node">E</span>
+        <div class="p1-card">
+          <span class="p1-step">STEP 01 · EXTRACT</span>
+          <h3>살아 있는 화면을 데이터로 되돌리기</h3>
+          <div class="p1-chips"><span class="p1-chip">런타임 DOM/CSSOM 캡처</span><span class="p1-chip">네트워크 호출 추적</span><span class="p1-chip">데이터 스키마 복원</span></div>
+          <p class="p1-note">원본 소스코드나 문서가 남아 있지 않아도, 브라우저에 그려진 결과물로부터 구조를 되돌립니다.</p>
+        </div>
+      </div>
+      <div class="p1-item">
+        <span class="p1-node">T</span>
+        <div class="p1-card">
+          <span class="p1-step">STEP 02 · TRANSFORM</span>
+          <h3>의미를 이해한 뒤 최신 스택으로 재구성</h3>
+          <div class="p1-chips"><span class="p1-chip">AST 분석</span><span class="p1-chip">LLM 시맨틱 추론</span><span class="p1-chip">데이터·레이아웃·브랜드 보존</span></div>
+          <p class="p1-note">결과물은 "비슷한 사이트"가 아니라 여전히 내 사이트로 읽힙니다.</p>
+        </div>
+      </div>
+      <div class="p1-item">
+        <span class="p1-node">L</span>
+        <div class="p1-card">
+          <span class="p1-step">STEP 03 · LOAD</span>
+          <h3>관리형 백엔드에 프로비저닝, 즉시 운영</h3>
+          <div class="p1-chips"><span class="p1-chip">자동 프로비저닝</span><span class="p1-chip">BaaS 자동 연결</span><span class="p1-chip">상용 서비스로 기동</span></div>
+          <p class="p1-note">정적 페이지가 아니라, 처음부터 거래가 발생하는 상용 서비스로 기동합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="tag"><b>시안 P2</b>고스트 넘버 3컬럼 — 카드 배경에 아웃라인 숫자, 한눈에 스캔 (SaaS 문법)</div>
+<section class="mock mock-p2">
+  <div class="wrap">
+    <div class="center">
+      <p class="eyebrow">HOW IT WORKS</p>
+      <h2 class="h2" style="margin-top:12px;">3단계 동작 원리</h2>
+      <p class="sub">빈 화면에서 새로 만드는 것이 아니라, 있는 것을 읽어서 다시 살립니다.</p>
+    </div>
+    <div class="p2-grid">
+      <div class="p2-card hl">
+        <span class="p2-ghost">01</span>
+        <span class="p2-mono">E</span>
+        <h3>Extract</h3>
+        <h4>살아 있는 화면을 데이터로</h4>
+        <ul class="p2-list">
+          <li>런타임 DOM/CSSOM 캡처 — 렌더된 결과를 구조 데이터로</li>
+          <li>네트워크 호출 추적 — 의존 API·엔드포인트 파악</li>
+          <li>역추적으로 데이터 스키마 복원</li>
+        </ul>
+      </div>
+      <div class="p2-card">
+        <span class="p2-ghost">02</span>
+        <span class="p2-mono">T</span>
+        <h3>Transform</h3>
+        <h4>의미를 이해한 뒤 재구성</h4>
+        <ul class="p2-list">
+          <li>AST 분석 — 문법 구조 단위로 해부</li>
+          <li>LLM 시맨틱 추론 — 로직·의도 해석</li>
+          <li>데이터·레이아웃·브랜드 보존한 재구성</li>
+        </ul>
+      </div>
+      <div class="p2-card">
+        <span class="p2-ghost">03</span>
+        <span class="p2-mono">L</span>
+        <h3>Load</h3>
+        <h4>프로비저닝, 즉시 운영</h4>
+        <ul class="p2-list">
+          <li>관리형 백엔드에 자동 프로비저닝</li>
+          <li>내장 BaaS로 회원·결제·예약·문의 연결</li>
+          <li>처음부터 거래가 발생하는 상용 서비스</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="tag"><b>시안 P3</b>다크 스텝 쇼케이스 — 좌측 스텝 리스트(활성 강조) · 우측 다이어그램 패널, 스크롤 시 자동 전환 (Linear 계열)</div>
+<section class="mock mock-p3">
+  <div class="wrap">
+    <p class="eyebrow">HOW IT WORKS</p>
+    <h2 class="h2" style="margin-top:12px;">3단계 동작 원리</h2>
+    <p class="sub">빈 화면에서 새로 만드는 것이 아니라, 있는 것을 읽어서 다시 살립니다.</p>
+    <div class="p3-body">
+      <div class="p3-nav">
+        <div class="p3-navitem on">
+          <span class="no">STEP 01</span>
+          <h3>Extract — 화면을 데이터로</h3>
+          <p>런타임 DOM/CSSOM을 캡처하고 네트워크 호출을 추적해, 원본 코드가 없어도 데이터 스키마를 복원합니다.</p>
+          <div class="p3-bar"><i></i></div>
+        </div>
+        <div class="p3-navitem">
+          <span class="no">STEP 02</span>
+          <h3>Transform — 의미 기반 재구성</h3>
+        </div>
+        <div class="p3-navitem">
+          <span class="no">STEP 03</span>
+          <h3>Load — 즉시 운영</h3>
+        </div>
+      </div>
+      <div class="p3-panel">
+        <div class="p3-flow">
+          <span class="p3-box">DOM / CSSOM</span>
+          <span class="p3-arrow">→</span>
+          <span class="p3-box">Network</span>
+          <span class="p3-arrow">→</span>
+          <span class="p3-box hl">Schema</span>
+        </div>
+        <p class="p3-cap">브라우저에 그려진 결과물로부터 구조를 되돌립니다</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="tag"><b>시안 P4</b>파이프라인 플로우 — 굵은 그라디언트 커넥터로 이어진 가로 플로우, 커넥터 위 도트가 흐르는 연출 (기술 다이어그램 문법)</div>
+<section class="mock">
+  <div class="wrap">
+    <div class="center">
+      <p class="eyebrow">HOW IT WORKS</p>
+      <h2 class="h2" style="margin-top:12px;">3단계 동작 원리</h2>
+      <p class="sub">멈춘 사이트가 입력되어, 상용 서비스로 나올 때까지 — 하나의 파이프라인입니다.</p>
+    </div>
+    <div class="p4-flow">
+      <div class="p4-stage">
+        <span class="p4-letter">E</span>
+        <h3>Extract</h3>
+        <h4>살아 있는 화면을 데이터로</h4>
+        <div class="p4-kw"><span>DOM/CSSOM</span><span>NETWORK</span><span>SCHEMA</span></div>
+      </div>
+      <div class="p4-link"></div>
+      <div class="p4-stage s2">
+        <span class="p4-letter">T</span>
+        <h3>Transform</h3>
+        <h4>의미를 이해한 뒤 재구성</h4>
+        <div class="p4-kw"><span>AST</span><span>LLM SEMANTICS</span><span>BRAND KEEP</span></div>
+      </div>
+      <div class="p4-link"></div>
+      <div class="p4-stage s3">
+        <span class="p4-letter">L</span>
+        <h3>Load</h3>
+        <h4>프로비저닝, 즉시 운영</h4>
+        <div class="p4-kw"><span>SERVERLESS</span><span>BAAS</span><span>LIVE</span></div>
+      </div>
+    </div>
+    <div class="p4-io"><span>IN · <b>멈춘 사이트 주소</b></span><span>OUT · <b>상용 운영 가능 서비스</b></span></div>
+  </div>
+</section>
+
+<div style="height:56px"></div>
+</body>
+</html>

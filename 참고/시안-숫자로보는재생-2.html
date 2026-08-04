@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>숫자로 보는 재생 — 추가 시안 4종 (E~H)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --paper:#F7F9FC; --surface:#fff; --ink:#0E1626; --muted:#5B6577; --faint:#8B94A6;
+  --accent:#2B5CE6; --accent-deep:#1E43B8; --mint:#5CDBB4; --navy:#0A1836; --line:#E4E9F2;
+  --font:"Pretendard Variable",Pretendard,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:#DDE3EC;color:var(--ink);-webkit-font-smoothing:antialiased;word-break:keep-all;}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px;}
+.tag{max-width:1160px;margin:56px auto 14px;padding:0 24px;font-size:15px;font-weight:800;color:#39415a;}
+.tag b{display:inline-block;background:var(--ink);color:#fff;border-radius:8px;padding:4px 12px;margin-right:10px;font-size:13px;}
+.mock{background:var(--paper);padding:100px 0;overflow:hidden;}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);}
+.h2{font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1.3;}
+.foot{font-size:12px;color:var(--faint);}
+
+/* ═══ 시안 E — 마퀴 티커 (풀블리드 스트립) ═══ */
+.mock-e{padding:90px 0;}
+.e-head{text-align:center;margin-bottom:60px;}
+.e-strip{position:relative;background:var(--navy);padding:44px 0;transform:rotate(-1.6deg);margin:0 -40px;box-shadow:0 30px 60px -30px rgba(10,24,54,.5);}
+.e-track{display:flex;gap:72px;align-items:baseline;white-space:nowrap;padding-left:40px;}
+.e-item{display:inline-flex;align-items:baseline;gap:18px;}
+.e-num{font-size:88px;font-weight:800;letter-spacing:-.05em;line-height:1;color:#fff;}
+.e-num.alt{color:transparent;-webkit-text-stroke:2px rgba(255,255,255,.55);}
+.e-cap{font-size:14px;font-weight:700;color:var(--mint);}
+.e-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);align-self:center;}
+.mock-e .foot{text-align:center;margin-top:56px;}
+
+/* ═══ 시안 F — 아웃라인 타이포 + 호버 필 ═══ */
+.mock-f{background:var(--surface);}
+.f-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:70px;}
+.f-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;}
+.f-cell{padding:52px 40px;border-top:1px solid var(--line);position:relative;}
+.f-cell:nth-child(odd){border-right:1px solid var(--line);}
+.f-num{font-size:120px;font-weight:800;letter-spacing:-.06em;line-height:.95;color:transparent;-webkit-text-stroke:2.5px #C9D4E8;transition:.3s;}
+.f-cell.on .f-num{color:var(--accent);-webkit-text-stroke:0;}
+.f-meta{display:flex;align-items:baseline;gap:14px;margin-top:20px;}
+.f-label{font-size:16px;font-weight:800;}
+.f-vs{font-size:12.5px;color:var(--faint);}
+.f-hint{position:absolute;top:22px;right:24px;font-size:10.5px;font-weight:700;letter-spacing:.08em;color:#B8C2D4;}
+.mock-f .foot{margin-top:34px;text-align:right;}
+
+/* ═══ 시안 G — 스위스 컬러 블록 (풀블리드 4분할) ═══ */
+.mock-g{padding:0;background:var(--paper);}
+.g-head{text-align:center;padding:90px 0 60px;}
+.g-band{display:grid;grid-template-columns:repeat(4,1fr);}
+.g-block{aspect-ratio:1/1.05;padding:36px 32px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;}
+.g-1{background:var(--accent);}
+.g-2{background:var(--navy);}
+.g-3{background:var(--mint);color:var(--navy);}
+.g-4{background:var(--ink);}
+.g-idx{font-size:12px;font-weight:800;letter-spacing:.12em;opacity:.6;}
+.g-num{font-size:clamp(52px,5.4vw,74px);font-weight:800;letter-spacing:-.05em;line-height:1;}
+.g-label{font-size:15px;font-weight:800;margin-top:14px;}
+.g-vs{font-size:12px;opacity:.65;margin-top:5px;line-height:1.6;}
+.g-foot{padding:44px 0 90px;text-align:center;}
+
+/* ═══ 시안 H — 워터마크 레이어드 ═══ */
+.mock-h{background:var(--navy);position:relative;padding:130px 0;}
+.h-water{position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);font-size:340px;font-weight:800;letter-spacing:-.06em;line-height:1;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.09);white-space:nowrap;pointer-events:none;}
+.mock-h .wrap{position:relative;}
+.h-head{text-align:center;}
+.mock-h .eyebrow{color:var(--mint);}
+.mock-h .h2{color:#fff;margin-top:12px;}
+.h-main{margin-top:80px;text-align:center;}
+.h-big{font-size:150px;font-weight:800;letter-spacing:-.06em;line-height:1;background:linear-gradient(135deg,#8FB3FF,#5CDBB4);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 16px 50px rgba(43,92,230,.5));}
+.h-bigcap{margin-top:16px;font-size:17px;font-weight:800;color:#fff;}
+.h-bigvs{margin-top:5px;font-size:13px;color:rgba(255,255,255,.55);}
+.h-row{display:flex;justify-content:center;gap:80px;margin-top:74px;padding-top:44px;border-top:1px solid rgba(255,255,255,.12);}
+.h-sub{text-align:center;}
+.h-subnum{font-size:44px;font-weight:800;letter-spacing:-.04em;color:#fff;}
+.h-sublabel{margin-top:8px;font-size:13px;font-weight:700;color:rgba(255,255,255,.75);}
+.h-subvs{margin-top:3px;font-size:11.5px;color:rgba(255,255,255,.45);}
+.mock-h .foot{color:rgba(255,255,255,.38);text-align:center;margin-top:52px;}
+</style>
+</head>
+<body>
+
+<div class="tag"><b>시안 E</b>마퀴 티커 — 기울어진 풀블리드 스트립 (어워드·포트폴리오 계열, 실제로는 무한 스크롤 애니메이션)</div>
+<section class="mock mock-e">
+  <div class="e-head">
+    <p class="eyebrow">IMPACT</p>
+    <h2 class="h2" style="margin-top:12px;">숫자로 보는 재생</h2>
+  </div>
+  <div class="e-strip">
+    <div class="e-track">
+      <span class="e-item"><span class="e-num">1–3일</span><span class="e-cap">재생 소요 기간</span></span>
+      <span class="e-dot"></span>
+      <span class="e-item"><span class="e-num alt">90%+</span><span class="e-cap">작업 시간 단축</span></span>
+      <span class="e-dot"></span>
+      <span class="e-item"><span class="e-num">3–5×</span><span class="e-cap">생성 속도</span></span>
+      <span class="e-dot"></span>
+      <span class="e-item"><span class="e-num alt">30%</span><span class="e-cap">운영비 절감</span></span>
+      <span class="e-dot"></span>
+      <span class="e-item"><span class="e-num">1–3일</span><span class="e-cap">재생 소요 기간</span></span>
+    </div>
+  </div>
+  <p class="foot">* 모든 수치는 자사 내부 측정치(company data) 기준입니다.</p>
+</section>
+
+<div class="tag"><b>시안 F</b>아웃라인 타이포 — 스트로크 넘버, 호버 시 컬러 필 (Awwwards 에이전시 계열 · 좌상단이 호버된 상태)</div>
+<section class="mock mock-f">
+  <div class="wrap">
+    <div class="f-head">
+      <div>
+        <p class="eyebrow">IMPACT</p>
+        <h2 class="h2" style="margin-top:12px;">숫자로 보는 재생</h2>
+      </div>
+      <p class="foot">* 자사 내부 측정치 기준</p>
+    </div>
+    <div class="f-grid">
+      <div class="f-cell on">
+        <span class="f-hint">HOVER</span>
+        <div class="f-num">1–3일</div>
+        <div class="f-meta"><span class="f-label">재생 소요 기간</span><span class="f-vs">기존 전면 재제작 3~6개월</span></div>
+      </div>
+      <div class="f-cell">
+        <div class="f-num">90%+</div>
+        <div class="f-meta"><span class="f-label">작업 시간 단축</span><span class="f-vs">비개발자 1명이 수행</span></div>
+      </div>
+      <div class="f-cell">
+        <div class="f-num">3–5×</div>
+        <div class="f-meta"><span class="f-label">생성 속도</span><span class="f-vs">멀티에이전트 병렬 생성</span></div>
+      </div>
+      <div class="f-cell">
+        <div class="f-num">30%</div>
+        <div class="f-meta"><span class="f-label">운영비 절감</span><span class="f-vs">서버리스 아키텍처 기준</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="tag"><b>시안 G</b>스위스 컬러 블록 — 브랜드 컬러 4분할 풀블리드 (포스터·브루탈리즘 계열)</div>
+<section class="mock mock-g">
+  <div class="g-head">
+    <p class="eyebrow">IMPACT</p>
+    <h2 class="h2" style="margin-top:12px;">숫자로 보는 재생</h2>
+  </div>
+  <div class="g-band">
+    <div class="g-block g-1">
+      <span class="g-idx">01</span>
+      <div>
+        <div class="g-num">1–3일</div>
+        <div class="g-label">재생 소요 기간</div>
+        <div class="g-vs">기존 전면 재제작 3~6개월</div>
+      </div>
+    </div>
+    <div class="g-block g-2">
+      <span class="g-idx">02</span>
+      <div>
+        <div class="g-num">90%+</div>
+        <div class="g-label">작업 시간 단축</div>
+        <div class="g-vs">비개발자 1명이 수행</div>
+      </div>
+    </div>
+    <div class="g-block g-3">
+      <span class="g-idx">03</span>
+      <div>
+        <div class="g-num">3–5×</div>
+        <div class="g-label">생성 속도</div>
+        <div class="g-vs">멀티에이전트 병렬 생성 기준</div>
+      </div>
+    </div>
+    <div class="g-block g-4">
+      <span class="g-idx">04</span>
+      <div>
+        <div class="g-num">30%</div>
+        <div class="g-label">운영비 절감</div>
+        <div class="g-vs">서버리스 아키텍처 기준</div>
+      </div>
+    </div>
+  </div>
+  <p class="foot g-foot">* 모든 수치는 자사 내부 측정치(company data) 기준입니다.</p>
+</section>
+
+<div class="tag"><b>시안 H</b>워터마크 레이어드 — 대표 수치 하나를 초대형으로, 나머지는 보조 행 (히어로 넘버 계열)</div>
+<section class="mock mock-h">
+  <div class="h-water">100×</div>
+  <div class="wrap">
+    <div class="h-head">
+      <p class="eyebrow">IMPACT</p>
+      <h2 class="h2">숫자로 보는 재생</h2>
+    </div>
+    <div class="h-main">
+      <div class="h-big">1–3일</div>
+      <div class="h-bigcap">재생 소요 기간 — 기존 전면 재제작 3~6개월</div>
+      <div class="h-bigvs">100배 빠른 복구, 비개발자 1명이 수행합니다</div>
+      <div class="h-row">
+        <div class="h-sub">
+          <div class="h-subnum">90%+</div>
+          <div class="h-sublabel">작업 시간 단축</div>
+          <div class="h-subvs">비개발자 1명이 수행</div>
+        </div>
+        <div class="h-sub">
+          <div class="h-subnum">3–5×</div>
+          <div class="h-sublabel">생성 속도</div>
+          <div class="h-subvs">멀티에이전트 병렬 생성</div>
+        </div>
+        <div class="h-sub">
+          <div class="h-subnum">30%</div>
+          <div class="h-sublabel">운영비 절감</div>
+          <div class="h-subvs">서버리스 아키텍처 기준</div>
+        </div>
+      </div>
+      <p class="foot">* 모든 수치는 자사 내부 측정치(company data) 기준입니다.</p>
+    </div>
+  </div>
+</section>
+
+<div style="height:56px"></div>
+</body>
+</html>
