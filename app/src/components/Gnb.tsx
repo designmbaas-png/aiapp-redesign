@@ -105,7 +105,7 @@ export function Gnb() {
           {siteLink}
           {langSeg}
           <button className="btn btn-accent" type="button" onClick={() => openLogin('signup')}>
-            {t('재생 진단 문의', 'Request a scan')}
+            {t('재생 진단 시작', 'Start revival scan')}
           </button>
         </div>
         <button
@@ -151,7 +151,7 @@ export function Gnb() {
                 openLogin('signup')
               }}
             >
-              {t('재생 진단 문의', 'Request a scan')}
+              {t('재생 진단 시작', 'Start revival scan')}
             </button>
             {siteLink}
           </div>
