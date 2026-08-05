@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useLang } from '../i18n'
-import { useLogin } from '../components/LoginModal'
+import { STUDIO_URL } from '../config'
 
 export function TrustCta() {
   const { t } = useLang()
-  const { openLogin } = useLogin()
   const [url, setUrl] = useState('')
+  const startScan = () => window.location.assign(STUDIO_URL)
 
   return (
     <section className="section etl-trust" id="trust">
@@ -63,11 +63,11 @@ export function TrustCta() {
               type="text"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && openLogin('signup')}
+              onKeyDown={(e) => e.key === 'Enter' && startScan()}
               placeholder={t('멈춘 사이트 주소를 알려주세요 — https://…', 'Tell us the URL of the stalled site — https://…')}
               aria-label={t('사이트 주소 입력', 'Site URL')}
             />
-            <button className="btn btn-accent" type="button" onClick={() => openLogin('signup')}>
+            <button className="btn btn-accent" type="button" onClick={startScan}>
               {t('재생 진단 시작', 'Start revival scan')}
             </button>
           </div>

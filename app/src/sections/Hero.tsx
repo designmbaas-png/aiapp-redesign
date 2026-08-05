@@ -1,19 +1,17 @@
 import { useState } from 'react'
 import { useLang } from '../i18n'
-import { useLogin } from '../components/LoginModal'
+import { STUDIO_URL } from '../config'
 
 export function Hero() {
   const { t } = useLang()
-  const { openLogin } = useLogin()
   const [url, setUrl] = useState('')
   const [scanning, setScanning] = useState(false)
 
-  // 파이프라인이 잠깐 반응한 뒤 로그인(가입) 모달로 연결
+  // 파이프라인이 잠깐 반응한 뒤 스튜디오로 이동
   const startScan = () => {
     setScanning(true)
     setTimeout(() => {
-      openLogin('signup')
-      setScanning(false)
+      window.location.assign(STUDIO_URL)
     }, 700)
   }
 

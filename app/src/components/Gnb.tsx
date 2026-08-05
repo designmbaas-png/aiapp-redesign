@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLang } from '../i18n'
-import { useLogin } from './LoginModal'
+import { STUDIO_URL } from '../config'
 import logo from '../assets/logo.png'
 import logoWhite from '../assets/logo-white.svg'
 
@@ -21,7 +21,6 @@ const ANCHORS = [
    모바일(≤880)에서는 앵커 내비가 숨겨지므로 햄버거 드로어로 제공 */
 export function Gnb() {
   const { lang, setLang, t } = useLang()
-  const { openLogin } = useLogin()
   const [solid, setSolid] = useState(false)
   const [drawer, setDrawer] = useState(false)
   const toggleRef = useRef<HTMLButtonElement>(null)
@@ -104,9 +103,9 @@ export function Gnb() {
         <div className="util">
           {siteLink}
           {langSeg}
-          <button className="btn btn-accent" type="button" onClick={() => openLogin('signup')}>
+          <a className="btn btn-accent" href={STUDIO_URL}>
             {t('재생 진단 시작', 'Start revival scan')}
-          </button>
+          </a>
         </div>
         <button
           className="gnb-toggle"
@@ -143,16 +142,9 @@ export function Gnb() {
         <div className="nav-drawer-foot">
           {langSeg}
           <div className="nav-drawer-auth">
-            <button
-              className="btn btn-accent"
-              type="button"
-              onClick={() => {
-                close()
-                openLogin('signup')
-              }}
-            >
+            <a className="btn btn-accent" href={STUDIO_URL} onClick={close}>
               {t('재생 진단 시작', 'Start revival scan')}
-            </button>
+            </a>
             {siteLink}
           </div>
         </div>
